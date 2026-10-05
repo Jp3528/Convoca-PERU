@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Convoca Peru
 
-## Getting Started
+Portal de convocatorias laborales, practicas preprofesionales, practicas profesionales y guias para postulantes en Peru.
 
-First, run the development server:
+## Stack recomendado
+
+- Next.js App Router con TypeScript para SEO, rutas dinamicas y deploy sencillo.
+- Supabase Postgres como base de datos productiva.
+- Vercel como hosting.
+- Dominio comprado o administrado en Cloudflare apuntando a Vercel por DNS.
+
+## Desarrollo local
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copiar `.env.example` a `.env.local` y completar valores reales. No subir `.env.local` al repositorio.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Base de datos
 
-## Learn More
+El archivo `database/schema.sql` contiene el esquema inicial para Supabase:
 
-To learn more about Next.js, take a look at the following resources:
+- organizaciones
+- convocatorias
+- carreras por convocatoria
+- articulos
+- politicas RLS para lectura publica de contenido publicado
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Produccion
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Crear proyecto en Supabase y ejecutar `database/schema.sql`.
+2. Cargar convocatorias reales desde el panel o scripts internos.
+3. Subir el repositorio a GitHub.
+4. Importar el repositorio en Vercel.
+5. Configurar dominio propio desde Vercel y crear los registros DNS en Cloudflare.
+6. Cuando AdSense apruebe el sitio, colocar el ID real en `NEXT_PUBLIC_ADSENSE_CLIENT` y publicar `ads.txt`.
 
-## Deploy on Vercel
+## Nota editorial
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Las convocatorias deben enlazar a una fuente oficial. El sitio no debe cobrar por postulaciones ni reemplazar las bases de cada entidad.
