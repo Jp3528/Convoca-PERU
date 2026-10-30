@@ -63,7 +63,7 @@ La versión de producción está publicada en [convoca-peru.vercel.app](https://
 
 En una base nueva, database/005_supabase_initial_setup.sql consolida las migraciones 002, 003 y 004. Para copiar contenido, `npm run migrate:supabase` simula y `npm run migrate:supabase:apply` aplica la copia.
 
-La cuenta de AdSense se creó el 30 de octubre de 2026. Google recibió los datos del titular y aceptó registrar convoca-peru.vercel.app. Su identificador público está configurado; los anuncios reales siguen desactivados mientras se completa la conexión, revisión del sitio, bloques y consentimiento. Los indicadores del panel son comprobaciones técnicas, no una aprobación de Google.
+La cuenta de AdSense se creó el 30 de octubre de 2026. Google recibió los datos del titular, aceptó convoca-peru.vercel.app y verificó su propiedad mediante la metaetiqueta. Se solicitó la revisión del sitio y se configuraron tres bloques responsivos. Los anuncios reales siguen desactivados mientras Google evalúa el sitio y se completa la configuración y comprobación del consentimiento. Los indicadores del panel son comprobaciones técnicas, no una aprobación de Google.
 
 ## Estructura
 

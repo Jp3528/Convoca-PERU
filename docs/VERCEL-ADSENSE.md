@@ -4,7 +4,9 @@
 
 El portal está publicado en https://convoca-peru.vercel.app y conectado al proyecto convoca-peru de Supabase desde el 30 de octubre de 2026. Se crearon las tres tablas con RLS y se copiaron 19 registros reales (una guía original y 18 hallazgos). Las muestras y consultas privadas locales se excluyeron. Las variables de producción están configuradas en Vercel; las credenciales se guardaron como Secret. La cuenta de AdSense se creó con autorización del titular y país Perú el 30 de octubre de 2026. El titular completó los datos del perfil de pagos y Google confirma su recepción. El formulario de sitios aceptó registrar convoca-peru.vercel.app. El identificador de editor está configurado para la metaetiqueta de verificación y ads.txt. Los anuncios permanecen desactivados.
 
-Pendiente: verificar la conexión del sitio, obtener la revisión de Google y configurar bloques y consentimiento antes de activar anuncios. El registro de la URL no equivale a aprobación. Los datos legales y de pagos permanecen en Google y no se copiaron al repositorio.
+Google verificó la propiedad mediante la metaetiqueta y se solicitó la revisión del sitio. Se crearon tres unidades gráficas responsivas (Portada, Guías y Convocatorias) y se configuraron sus identificadores en las variables de producción de Vercel. Pendiente: aprobación de Google y completar y comprobar el consentimiento antes de activar anuncios. Los datos legales y de pagos permanecen en Google y no se copiaron al repositorio.
+
+El panel de Reglamentos europeos de Google quedó cargando con su iframe en blanco, tanto al abrirlo desde el menú como después de recargar. La consola del propio panel muestra `Could not find event bus in current window context`. No se pudo crear el mensaje desde esa interfaz. `NEXT_PUBLIC_ADSENSE_CONSENT_READY`, `NEXT_PUBLIC_ADSENSE_APPROVED` y `NEXT_PUBLIC_ADSENSE_ENABLED` permanecen en false. Tampoco se activaron anuncios automáticos en AdSense.
 
 ## 1. Crear la base de datos
 
