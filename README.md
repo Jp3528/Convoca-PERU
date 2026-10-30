@@ -13,7 +13,7 @@ Portal de convocatorias y orientación laboral con Next.js 16, React 19 y TypeSc
 - Sitemap dinámico, control de indexación y páginas informativas.
 - Bloques de AdSense preparados, ads.txt generado con un ID válido y vista previa local sin solicitudes publicitarias.
 - Una primera guía original publicada y conservada en content/initial-articles.json.
-- Scraping automático del MTC y ProInversión: ejecución cada hora en local y cron diario preparado para Vercel. Deduplicación, detección de cambios y sección pública de hallazgos vigentes que requieren verificar las bases. Consulta [el funcionamiento y límites](docs/IMPORTADOR.md).
+- Scraping automático del MTC y ProInversión: ejecución cada hora en local y cron diario en Vercel. Deduplicación, detección de cambios y sección pública de hallazgos vigentes que requieren verificar las bases. Consulta [el funcionamiento y límites](docs/IMPORTADOR.md).
 
 El catálogo local conserva convocatorias y guías de muestra identificadas. En Supabase no se cargan muestras automáticamente. Una casilla de revisión editorial representa la revisión que debe realizar el administrador; no verifica automáticamente una oferta en Internet.
 
@@ -57,9 +57,9 @@ En otra terminal ejecuta npm run test:backend. La prueba exige el puerto 3061 y 
 Consulta [la guía de publicación y monetización](docs/VERCEL-ADSENSE.md). La migración está en [database/002_portal_documents.sql](database/002_portal_documents.sql).
 
 Para los borradores del importador ejecuta también [database/003_import_candidates.sql](database/003_import_candidates.sql).
-La ejecución periódica en Vercel requiere además [database/004_import_automation.sql](database/004_import_automation.sql), `AUTO_IMPORT_ENABLED=true` y una variable privada `CRON_SECRET` de al menos 32 caracteres. El cron de producción está en vercel.json; todavía no se ha desplegado.
+La ejecución periódica en Vercel requiere además [database/004_import_automation.sql](database/004_import_automation.sql), `AUTO_IMPORT_ENABLED=true` y una variable privada `CRON_SECRET` de al menos 32 caracteres. El cron de producción está en vercel.json: se ejecuta diariamente a las 12:00 UTC, dentro de la hora de las 7 a. m. de Lima en el plan Hobby.
 
-La conexión real con Supabase se verificó el 30 de octubre de 2026: el portal local usa las tablas remotas y la búsqueda automática guarda allí su estado y resultados. La clave está solo en .env.local. Vercel requiere configurar también esas variables privadas al desplegar; nunca coloques una clave secreta en NEXT_PUBLIC.
+La versión de producción está publicada en [convoca-peru.vercel.app](https://convoca-peru.vercel.app) desde el 30 de octubre de 2026. Usa las tablas remotas de Supabase y muestra los hallazgos reales sin muestras. Las credenciales están en las variables Secret de producción de Vercel y en el archivo local ignorado .env.local; nunca coloques una clave secreta en NEXT_PUBLIC. Las funciones se ejecutan en São Paulo, junto a la base de datos.
 
 En una base nueva, database/005_supabase_initial_setup.sql consolida las migraciones 002, 003 y 004. Para copiar contenido, `npm run migrate:supabase` simula y `npm run migrate:supabase:apply` aplica la copia.
 

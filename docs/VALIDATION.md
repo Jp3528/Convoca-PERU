@@ -28,3 +28,17 @@ Compatibilidad de claves comprobada: sb_secret_ solo en apikey; JWT service_role
 Consulta de permisos en el proyecto real: las tres tablas tienen RLS y carecen de SELECT para anon y authenticated. service_role puede leer publicaciones y ejecuciones; el límite de solicitudes se consume mediante su función SECURITY DEFINER, sin SELECT directo sobre la tabla de límites. La clave privada no aparece en el paquete del navegador ni en los archivos trazados del servidor.
 
 La instancia principal se mantiene en http://127.0.0.1:3060/.
+
+## Producción en Vercel
+
+Publicado el 30 de octubre de 2026 en https://convoca-peru.vercel.app, desde la rama main de Jp3528/Convoca-PERU. Cinco variables Secret y nueve de configuración, solo en producción. Funciones en gru1 (São Paulo).
+
+- Despliegue Ready; páginas de inicio, hallazgos, catálogo, guía original, contacto y acceso editorial con HTTP 200.
+- Inicio de sesión con HTTP 200 y cookie Secure. Lectura autenticada: proveedor supabase, 19 registros y cero muestras.
+- Estado automático habilitado, programador vercel e intervalo diario. Vercel muestra /api/cron/import habilitado con 0 12 * * * (07:00–07:59 de Lima en Hobby).
+- Cron sin autorización: HTTP 401. Con autorización: disponibilidad HTTP 200 y llamada anticipada omitida como not_due, respetando la próxima ejecución guardada. La primera ejecución programada queda para el día siguiente; no se afirma haber observado todavía esa invocación diaria.
+- Consulta de ProInversión ejecutada desde el servidor de producción: HTTP 200, diez procesos, cero duplicados nuevos, tres vencidos y siete hallazgos públicos. La lectura de las fuentes MTC y ProInversión también se había validado en el trabajador local contra Supabase.
+- Anuncios desactivados, sin script publicitario. /ads.txt devuelve HTTP 404 mientras no exista un editor válido.
+- El trabajador periódico local se detuvo para que la programación quede a cargo de Vercel. La vista en 3060 continúa disponible con la automatización local desactivada en ese proceso.
+
+Pruebas visuales: [hallazgos publicados](produccion-hallazgos.png) y [cron registrado](produccion-cron.png).

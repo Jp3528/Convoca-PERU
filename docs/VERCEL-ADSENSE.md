@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-El portal local está conectado al proyecto convoca-peru de Supabase desde el 30 de octubre de 2026. Se crearon las tres tablas con RLS, se copiaron 19 registros reales (una guía original y 18 hallazgos) y se verificó una búsqueda automática guardada en Supabase. Las muestras y consultas privadas locales se excluyeron. El despliegue y las variables de Vercel, y la cuenta de AdSense, siguen pendientes.
+El portal está publicado en https://convoca-peru.vercel.app y conectado al proyecto convoca-peru de Supabase desde el 30 de octubre de 2026. Se crearon las tres tablas con RLS y se copiaron 19 registros reales (una guía original y 18 hallazgos). Las muestras y consultas privadas locales se excluyeron. Las variables de producción están configuradas en Vercel; las credenciales se guardaron como Secret. La cuenta de AdSense sigue pendiente y los anuncios permanecen desactivados.
 
 ## 1. Crear la base de datos
 
@@ -15,7 +15,7 @@ La migración crea las publicaciones, la bandeja privada y el límite de solicit
 
 ## 2. Configurar Vercel
 
-Conecta el repositorio cuando se decida publicar estos cambios. Configura:
+El proyecto existente está vinculado a Jp3528/Convoca-PERU y publica la rama main. Para repetir la instalación, configura:
 
 | Variable                  | Uso                                                                   |
 | ------------------------- | --------------------------------------------------------------------- |
