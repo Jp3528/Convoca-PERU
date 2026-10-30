@@ -1,131 +1,80 @@
-# Convoca Perú | Jobs & Internships Portal
+# Convoca Perú
 
-[Español](#espanol) · [English](#english)
+Portal de convocatorias y orientación laboral con Next.js 16, React 19 y TypeScript. El diseño incluye una identidad propia, búsqueda por filtros, favoritos y guías.
 
-[Demo](https://convoca-peru.vercel.app) · [GitHub](https://github.com/Jp3528/Convoca-PERU)
+## Funcionalidad implementada
 
-<a id="espanol"></a>
+- Panel editorial protegido por contraseña y cookie de sesión HTTP-only.
+- Crear, editar, publicar y archivar convocatorias y guías; las publicaciones aparecen en la web desde el servidor.
+- Validación de fuente HTTPS, fecha, requisitos y revisión editorial; control de versiones para evitar sobreescrituras.
+- Consultas guardadas en una bandeja privada, con referencias y estados de atención.
+- Persistencia local en el servidor y conector REST a Supabase para Vercel.
+- Favoritos en el navegador y filtros combinados por carrera, región, sector, modalidad y estado.
+- Sitemap dinámico, control de indexación y páginas informativas.
+- Bloques de AdSense preparados, ads.txt generado con un ID válido y vista previa local sin solicitudes publicitarias.
+- Una primera guía original publicada y conservada en content/initial-articles.json.
+- Scraping automático del MTC y ProInversión: ejecución cada hora en local y cron diario preparado para Vercel. Deduplicación, detección de cambios y sección pública de hallazgos vigentes que requieren verificar las bases. Consulta [el funcionamiento y límites](docs/IMPORTADOR.md).
 
-## Español
+El catálogo local conserva convocatorias y guías de muestra identificadas. En Supabase no se cargan muestras automáticamente. Una casilla de revisión editorial representa la revisión que debe realizar el administrador; no verifica automáticamente una oferta en Internet.
 
-### Descripción
+## Ejecutar localmente
 
-Portal web para explorar convocatorias laborales, prácticas y guías para postulantes en Perú. Utiliza Next.js App Router y datos tipados para presentar oportunidades, filtros y fichas con enlaces a sus fuentes.
+Requisitos: Node.js 22 y npm.
 
-### Funcionalidades
-
-- Listado de oportunidades con filtros y páginas de detalle.
-- Guías editoriales con rutas dinámicas por artículo.
-- Panel de borradores y formulario de contacto de demostración.
-- Metadata, sitemap y robots definidos desde Next.js.
-
-### Tecnologías
-
-Next.js 16 · React 19 · TypeScript · CSS · ESLint
-
-### Ejecutar localmente
-
-**Requisitos:** Node.js 22 y npm.
-
-```bash
-git clone https://github.com/Jp3528/Convoca-PERU.git
-cd Convoca-PERU
-```
-
-```bash
+```powershell
 npm ci
-```
-
-**Configuración.** Copia [`.env.example`](.env.example) a `.env.local` para personalizar `NEXT_PUBLIC_SITE_URL`. Los valores de Supabase y AdSense incluidos son plantillas: no habilitan por sí solos esas integraciones.
-
-```bash
+npm run setup:local
 npm run dev
 ```
 
-Abre `http://localhost:3000`. Las oportunidades actuales se editan en `src/lib/data.ts`.
+Abre http://127.0.0.1:3060/ y el panel en /admin. Las credenciales generadas están en el archivo privado .local-admin.txt. El comando de configuración conserva un acceso ya creado y no rota su contraseña.
 
-### Comprobaciones
+Para servir la compilación optimizada con el mismo proceso automático: `npm run build` y `npm run start:local`. El proceso busca al iniciar y comprueba cada minuto si toca la siguiente ejecución. Funciona con el navegador cerrado mientras el servidor y el equipo estén encendidos. Abrir la web no dispara búsquedas externas.
 
-```bash
+Los datos locales se guardan en .data/portal.json, con escritura atómica y bloqueo entre procesos. .data/, .data-tests/, .env.local y .local-admin.txt están ignorados por Git y excluidos del paquete del servidor para Vercel.
+
+## Comprobaciones
+
+```powershell
 npm run lint
+npm test
 npm run build
 ```
 
-Comandos disponibles para comprobar el proyecto en un entorno con sus dependencias instaladas.
+Para las pruebas HTTP del backend, después de compilar, abre una terminal separada:
 
-### Estructura
+```powershell
+$env:LOCAL_DATA_DIR='.data-tests'
+$env:SUPABASE_URL=''
+$env:SUPABASE_SERVICE_ROLE_KEY=''
+node .\node_modules\next\dist\bin\next start --hostname 127.0.0.1 --port 3061
+```
 
-| Ruta                                         | Contenido                                   |
-| -------------------------------------------- | ------------------------------------------- |
-| [`src/app/`](src/app/)                       | Páginas, rutas dinámicas y metadata.        |
-| [`src/components/`](src/components/)         | Tarjetas y controles de búsqueda.           |
-| [`src/lib/data.ts`](src/lib/data.ts)         | Datos tipados de oportunidades y artículos. |
-| [`database/schema.sql`](database/schema.sql) | Esquema previsto para Supabase/PostgreSQL.  |
+En otra terminal ejecuta npm run test:backend. La prueba exige el puerto 3061 y almacenamiento local de pruebas; crea y archiva registros ficticios sin tocar el catálogo principal ni Supabase.
 
-### Alcance
+## Vercel y AdSense
 
-La versión actual utiliza datos locales. El panel conserva borradores en estado de React y el contacto muestra una confirmación local; no publican en Supabase ni envían mensajes. La persistencia, autenticación editorial y validación de convocatorias vigentes requieren desarrollo adicional. Las postulaciones se realizan en la fuente oficial de cada entidad.
+Consulta [la guía de publicación y monetización](docs/VERCEL-ADSENSE.md). La migración está en [database/002_portal_documents.sql](database/002_portal_documents.sql).
 
----
+Para los borradores del importador ejecuta también [database/003_import_candidates.sql](database/003_import_candidates.sql).
+La ejecución periódica en Vercel requiere además [database/004_import_automation.sql](database/004_import_automation.sql), `AUTO_IMPORT_ENABLED=true` y una variable privada `CRON_SECRET` de al menos 32 caracteres. El cron de producción está en vercel.json; todavía no se ha desplegado.
 
-<a id="english"></a>
+La conexión real con Supabase se verificó el 30 de octubre de 2026: el portal local usa las tablas remotas y la búsqueda automática guarda allí su estado y resultados. La clave está solo en .env.local. Vercel requiere configurar también esas variables privadas al desplegar; nunca coloques una clave secreta en NEXT_PUBLIC.
+
+En una base nueva, database/005_supabase_initial_setup.sql consolida las migraciones 002, 003 y 004. Para copiar contenido, `npm run migrate:supabase` simula y `npm run migrate:supabase:apply` aplica la copia.
+
+Los anuncios reales están desactivados. Para activarlos se necesitan una cuenta, un sitio aprobado, los identificadores de bloques y el consentimiento configurado en AdSense. Los indicadores del panel son comprobaciones técnicas, no una aprobación de Google.
+
+## Estructura
+
+- src/lib/portal-store.ts: persistencia y catálogo público.
+- src/lib/editor-auth.ts: acceso, sesiones y límites de solicitudes.
+- src/lib/portal-validation.ts: validación editorial.
+- src/app/api/: publicación y recepción de consultas.
+- src/components/EditorDashboard.tsx: gestión de contenido, bandeja y preparación para monetizar.
+- content/initial-articles.json: contenido editorial original inicial.
+- docs/ASSETS.md: créditos visuales.
 
 ## English
 
-### Overview
-
-A web portal for exploring jobs, internships and application guides in Peru. It uses Next.js App Router and typed data to present opportunities, filters and detail pages linking to their sources.
-
-### Features
-
-- Opportunity listings with filters and detail pages.
-- Editorial guides with dynamic article routes.
-- Demo editorial drafts panel and contact form.
-- Metadata, sitemap and robots defined through Next.js.
-
-### Technology
-
-Next.js 16 · React 19 · TypeScript · CSS · ESLint
-
-### Run locally
-
-**Requirements:** Node.js 22 and npm.
-
-```bash
-git clone https://github.com/Jp3528/Convoca-PERU.git
-cd Convoca-PERU
-```
-
-```bash
-npm ci
-```
-
-**Configuration.** Copy [`.env.example`](.env.example) to `.env.local` to customize `NEXT_PUBLIC_SITE_URL`. The included Supabase and AdSense values are templates and do not enable those integrations by themselves.
-
-```bash
-npm run dev
-```
-
-Open `http://localhost:3000`. Current opportunities are edited in `src/lib/data.ts`.
-
-### Checks
-
-```bash
-npm run lint
-npm run build
-```
-
-Available commands for checking the project in an environment with its dependencies installed.
-
-### Structure
-
-| Path                                         | Contents                             |
-| -------------------------------------------- | ------------------------------------ |
-| [`src/app/`](src/app/)                       | Pages, dynamic routes and metadata.  |
-| [`src/components/`](src/components/)         | Cards and search controls.           |
-| [`src/lib/data.ts`](src/lib/data.ts)         | Typed opportunity and article data.  |
-| [`database/schema.sql`](database/schema.sql) | Proposed Supabase/PostgreSQL schema. |
-
-### Scope
-
-The current version uses local data. The editor keeps drafts in React state and the contact form shows a local confirmation; neither publishes to Supabase nor sends messages. Persistence, editorial authentication and verification of current opportunities require further development. Applications take place through each organization's official source.
+A job and internship portal with an authenticated editorial dashboard, server-persisted publishing, a private contact inbox, browser favorites and original guides. Local storage uses an atomic JSON repository; the Vercel connector uses Supabase REST and server-only credentials. AdSense slots and ads.txt are prepared but live ads remain disabled until an approved publisher account, ad units and consent configuration are provided. Sample listings remain labeled and are excluded from the production migration.

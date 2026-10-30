@@ -1,101 +1,94 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "Politica de Privacidad",
-  description:
-    "Politica de privacidad y proteccion de datos personales de Convoca Peru segun la Ley N° 29733.",
-};
-
-export default function PrivacyPage() {
+export const metadata: Metadata = { title: "Privacidad" };
+export default function Privacy() {
   return (
-    <main className="page-shell">
-      <nav className="mini-nav" aria-label="Secciones">
-        <Link href="/">Inicio</Link>
-        <Link href="/convocatorias">Convocatorias</Link>
-        <Link href="/blog">Guias</Link>
-        <Link href="/contacto">Contacto</Link>
-      </nav>
-
-      <article className="legal-card" style={{ maxWidth: "860px", margin: "0 auto" }}>
-        <p className="eyebrow">Marco Legal y Transparencia</p>
-        <h1>Politica de Privacidad y Proteccion de Datos</h1>
-        <p style={{ color: "var(--muted)", fontStyle: "italic" }}>
-          Ultima actualizacion: Octubre de 2026. En conformidad con la Ley N° 29733 (Ley de Proteccion
-          de Datos Personales del Peru) y su Reglamento.
+    <main id="contenido" className="page-shell">
+      <article className="legal-card">
+        <p className="eyebrow">TRANSPARENCIA</p>
+        <h1>Tu información y tu privacidad.</h1>
+        <p>
+          Esta página describe los datos utilizados por Convoca Perú y las
+          funciones del portal. Actualizada en octubre de 2026.
         </p>
-
-        <section style={{ display: "grid", gap: "14px", marginTop: "16px" }}>
-          <h2>1. Compromiso de Convoca Peru</h2>
-          <p>
-            <strong>Convoca Peru</strong> es una plataforma informativa independiente orientada a
-            facilitar el acceso y la comprension de convocatorias laborales, practicas
-            preprofesionales, practicas profesionales y oportunidades bajo regimen CAS en la
-            Republica del Peru. Nuestro principio rector es la proteccion estricta de la privacidad
-            de los usuarios que visitan y consultan nuestro portal.
-          </p>
-
-          <h2>2. Datos que recopilamos</h2>
-          <p>
-            Al navegar por nuestro sitio web, no solicitamos registros obligatorios ni recopilamos
-            informacion personal sensible (como DNI, datos biometricos o historial bancario). La
-            informacion que puede procesarse incluye:
-          </p>
-          <ul>
-            <li>
-              <strong>Datos de navegacion tecnica y anonima:</strong> Direccion IP anonimizada, tipo
-              de navegador, dispositivo y paginas consultadas, utilizados con fines de medicion de
-              rendimiento y estabilidad tecnica.
-            </li>
-            <li>
-              <strong>Formulario de contacto voluntario:</strong> Nombre y correo electronico que el
-              usuario proporciona libremente para enviar consultas, reportes o convocatorias.
-            </li>
-          </ul>
-
-          <h2>3. Finalidad del tratamiento de datos</h2>
-          <p>
-            Los datos tecnicos y de contacto se utilizan exclusivamente para:
-          </p>
-          <ul>
-            <li>Responder a consultas o solicitudes enviadas a traves del canal editorial.</li>
-            <li>Mejorar la navegabilidad y organizacion tematica del portal por carreras y regiones.</li>
-            <li>Garantizar la seguridad del servidor y prevenir ataques maliciosos o spam.</li>
-          </ul>
-
-          <h2>4. No intermediacion ni cobros</h2>
-          <p>
-            <strong>Convoca Peru no cobra dinero a ningun postulante</strong> por ver ofertas, postular
-            a convocatorias o descargar guias. Todas las oportunidades difundidas redirigen de forma
-            transparente a los enlaces y portales oficiales de las entidades públicas o privadas
-            convocantes. Nunca proporciones dinero a supuestos intermediarios.
-          </p>
-
-          <h2>5. Cookies y servicios de terceros</h2>
-          <p>
-            El sitio puede utilizar cookies tecnicas necesarias para el funcionamiento y optimizacion
-            del servicio. En caso de implementarse herramientas de medicion analitica (ej. Google
-            Analytics) o redes publicitarias (ej. Google AdSense), estas se rigen por las politicas
-            de privacidad de sus respectivos proveedores y permiten al usuario configurar el bloqueo
-            de cookies desde su navegador.
-          </p>
-
-          <h2>6. Derechos ARCO</h2>
-          <p>
-            De conformidad con la Ley N° 29733, todo usuario tiene derecho a ejercer sus derechos de
-            Acceso, Rectificacion, Cancelacion y Oposicion (ARCO) sobre los datos que hubiera
-            proporcionado voluntariamente. Para solicitarlo, basta con enviar un correo electronico
-            a: <strong style={{ color: "var(--primary)" }}>privacidad@convocaperu.pe</strong>.
-          </p>
-
-          <h2>7. Enlaces a sitios web de terceros</h2>
-          <p>
-            Nuestro portal enlaza a sitios web de entidades del Estado (gob.pe) y empresas privadas.
-            Convoca Peru no tiene control sobre las politicas de privacidad ni el tratamiento de datos
-            en dichos sitios externos, por lo que recomendamos leer las politicas propias de cada
-            portal al postular.
-          </p>
-        </section>
+        <h2>Guardados y borradores personales</h2>
+        <p>
+          Las convocatorias favoritas y los borradores de consultas se guardan
+          en el almacenamiento local de tu navegador. No requieren una cuenta ni
+          se sincronizan entre dispositivos. Puedes quitarlos desde la interfaz
+          o borrar los datos del sitio en tu navegador.
+        </p>
+        <h2>Consultas enviadas</h2>
+        <p>
+          Al enviar el formulario, recibimos tu nombre, correo, motivo, mensaje
+          y las referencias opcionales que aportes. Estos datos se guardan en el
+          servidor y se muestran únicamente en el panel editorial protegido para
+          atender la consulta. Evita incluir documentos de identidad,
+          contraseñas o datos sensibles.
+        </p>
+        <h2>Acceso editorial y seguridad</h2>
+        <p>
+          El acceso al panel utiliza una cookie de sesión técnica, con duración
+          limitada y acceso restringido desde JavaScript. El portal aplica
+          controles de origen y límites de solicitudes para proteger los
+          formularios. Para los límites se utiliza una referencia derivada de la
+          conexión, sin mostrarla en el panel público.
+        </p>
+        <h2>Proveedores de alojamiento y almacenamiento</h2>
+        <p>
+          En la publicación en Vercel, el alojamiento procesa las solicitudes
+          necesarias para servir la web y Supabase almacena los datos del
+          portal. En la versión local se utiliza almacenamiento en el equipo
+          donde se ejecuta el servidor. Los proveedores pueden tratar datos
+          técnicos de acuerdo con sus propias políticas.
+        </p>
+        <h2>Publicidad de Google</h2>
+        <p>
+          La publicidad real permanece desactivada hasta configurar la cuenta y
+          el consentimiento correspondiente. Si se activa Google AdSense, Google
+          y sus proveedores pueden usar cookies, identificadores, direcciones IP
+          u otros datos para servir, medir o personalizar anuncios según las
+          opciones disponibles y el consentimiento aplicable.
+        </p>
+        <p>
+          Consulta{" "}
+          <a
+            className="text-link"
+            href="https://policies.google.com/technologies/partner-sites"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            cómo usa Google los datos en los sitios de sus colaboradores
+          </a>{" "}
+          y sus{" "}
+          <a
+            className="text-link"
+            href="https://myadcenter.google.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            opciones de anuncios
+          </a>
+          . Cuando corresponda, los mensajes de consentimiento permitirán
+          gestionar tus preferencias. Los espacios de vista previa locales no
+          cargan anuncios ni herramientas publicitarias de Google.
+        </p>
+        <h2>Solicitudes sobre tus datos</h2>
+        <p>
+          Para consultar o solicitar la corrección o eliminación de una consulta
+          que enviaste, utiliza el formulario de contacto e indica su
+          referencia. El equipo podrá solicitar la información necesaria para
+          comprobar la solicitud.
+        </p>
+        <h2>Enlaces a entidades</h2>
+        <p>
+          Los portales externos tienen sus propias condiciones y privacidad.
+          Revisa esa información antes de enviar tu CV o documentos para
+          postular.
+        </p>
+        <Link className="button-primary" href="/contacto">
+          Enviar una consulta de privacidad
+        </Link>
       </article>
     </main>
   );

@@ -1,43 +1,29 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { articles } from "@/lib/data";
-
-export const metadata: Metadata = {
-  title: "Guias para postular",
-  description:
-    "Consejos para preparar CV, revisar convocatorias y postular a practicas o empleos en Peru.",
-};
-
-export default function BlogPage() {
+import { ArticleCard } from "@/components/ArticleCard";
+import { getCatalog } from "@/lib/portal-store";
+export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Guías y consejos para postular" };
+export default async function Guides() {
+  const { articles } = await getCatalog();
   return (
-    <main className="page-shell">
-      <nav className="mini-nav" aria-label="Secciones">
+    <main id="contenido" className="page-shell">
+      <nav className="breadcrumbs" aria-label="Ruta de navegación">
         <Link href="/">Inicio</Link>
-        <Link href="/convocatorias">Convocatorias</Link>
+        <span>/</span>
+        <span aria-current="page">Guías y consejos</span>
       </nav>
-
       <header className="page-header">
-        <p className="eyebrow">Guias utiles</p>
-        <h1>Contenido que tambien puede posicionar en Google.</h1>
+        <p className="eyebrow">PREPÁRATE PARA LO QUE VIENE</p>
+        <h1>Tu talento merece una buena preparación.</h1>
         <p>
-          El blog sostiene el trafico organico con articulos permanentes:
-          curriculum, entrevistas, derechos de practicantes y seguridad al
-          postular.
+          Desde tu primer CV hasta la entrevista: ideas claras y herramientas
+          para avanzar con más confianza.
         </p>
       </header>
-
-      <section className="article-grid" aria-label="Articulos">
-        {articles.map((article) => (
-          <Link
-            className="article-card"
-            href={`/blog/${article.slug}`}
-            key={article.slug}
-          >
-            <span>{article.category}</span>
-            <h3>{article.title}</h3>
-            <p>{article.description}</p>
-            <small>{article.readTime}</small>
-          </Link>
+      <section className="article-grid" aria-label="Guías para postular">
+        {articles.map((a, index) => (
+          <ArticleCard key={a.slug} article={a} index={index} />
         ))}
       </section>
     </main>

@@ -1,12 +1,13 @@
+import type { ImportProvenance } from "./import-types";
+
 export type OpportunityType =
-  | "Preprofesional"
-  | "Profesional"
-  | "Empleo"
-  | "CAS";
+  "Preprofesional" | "Profesional" | "Empleo" | "CAS";
 
 export type Sector = "Publico" | "Privado";
 
 export type Opportunity = {
+  importProvenance?: ImportProvenance;
+  isSample?: boolean;
   slug: string;
   title: string;
   organization: string;
@@ -29,6 +30,7 @@ export type Opportunity = {
 };
 
 export type Article = {
+  isSample?: boolean;
   slug: string;
   title: string;
   description: string;
@@ -72,7 +74,8 @@ export const careers = [
 export const opportunities: Opportunity[] = [
   {
     slug: "sunat-practicantes-aduanas-tributacion-sistemas-2026",
-    title: "Convocatoria de Practicas Pre y Profesionales en Aduanas, Tributos y TI",
+    title:
+      "Convocatoria de Prácticas Pre y Profesionales en Aduanas, Tributos y TI",
     organization: "SUNAT",
     sector: "Publico",
     type: "Preprofesional",
@@ -81,17 +84,17 @@ export const opportunities: Opportunity[] = [
     modality: "Hibrido",
     vacancies: 25,
     careers: [
-      "Administracion",
+      "Administración",
       "Contabilidad",
       "Derecho",
-      "Economia",
-      "Ingenieria de Sistemas",
-      "Ingenieria Industrial",
+      "Economía",
+      "Ingeniería de Sistemas",
+      "Ingeniería Industrial",
     ],
     endsAt: "2026-10-28",
     stipend: "S/ 1,200 mensuales + seguro FOLA",
     summary:
-      "Programa nacional formativo en gestion tributaria, control aduanero y desarrollo de soluciones tecnologicas para la administracion publica.",
+      "Programa nacional formativo en gestión tributaria, control aduanero y desarrollo de soluciones tecnológicas para la administracion pública.",
     requirements: [
       "Estudiante perteneciente al tercio o quinto superior a partir del 8vo ciclo.",
       "Dominio intermedio de herramientas ofimaticas y bases de datos.",
@@ -99,10 +102,10 @@ export const opportunities: Opportunity[] = [
       "Disponibilidad para convenio formativo de hasta 30 horas semanales.",
     ],
     steps: [
-      "Registrar postulacion en el portal UNETE a SUNAT.",
+      "Registrar postulación en el portal UNETE a SUNAT.",
       "Cargar ficha de datos personales y constancia de estudios vigente.",
-      "Rendir evaluacion tecnica y psicologica virtual.",
-      "Entrevista final y publicacion de cuadro de meritos.",
+      "Rendir evaluación técnica y psicológica virtual.",
+      "Entrevista final y publicación de cuadro de méritos.",
     ],
     sourceName: "Portal Institucional SUNAT - Seccion Oportunidades",
     sourceUrl: "https://unete.sunat.gob.pe/",
@@ -111,7 +114,8 @@ export const opportunities: Opportunity[] = [
   },
   {
     slug: "bcrp-concurso-practicantes-economia-finanzas-estadistica-2026",
-    title: "Programa de Extension y Practicas en Investigacion Economica y Finanzas",
+    title:
+      "Programa de Extensión y Prácticas en Investigación Economica y Finanzas",
     organization: "BANCO CENTRAL DE RESERVA DEL PERU (BCRP)",
     sector: "Publico",
     type: "Profesional",
@@ -119,20 +123,20 @@ export const opportunities: Opportunity[] = [
     province: "Lima",
     modality: "Presencial",
     vacancies: 10,
-    careers: ["Economia", "Ingenieria de Sistemas", "Contabilidad"],
+    careers: ["Economía", "Ingeniería de Sistemas", "Contabilidad"],
     endsAt: "2026-10-24",
-    stipend: "Subvencion competitiva acorde a ley formativa",
+    stipend: "Subvención competitiva acorde a ley formativa",
     summary:
-      "Oportunidad de alto impacto academico y profesional en politica monetaria, analisis macroeconomico y estabilidad financiera.",
+      "Oportunidad de alto impacto académico y profesional en politica monetaria, analisis macroeconomico y estabilidad financiera.",
     requirements: [
-      "Egresados o bachilleres con maximo 1 año de egreso.",
-      "Perteneciente al quinto o decimo superior de su promocion.",
-      "Manejo fluido de software econometrico (R, Python, Stata) e ingles avanzado.",
+      "Egresados o bachilleres con máximo 1 año de egreso.",
+      "Perteneciente al quinto o decimo superior de su promoción.",
+      "Manejo fluido de software econometrico (R, Python, Stata) e inglés avanzado.",
     ],
     steps: [
-      "Completar la ficha de inscripcion en el portal del BCRP.",
+      "Completar la ficha de inscripción en el portal del BCRP.",
       "Adjuntar constancia de orden de merito y expediente de notas.",
-      "Examen de seleccion academica en macroeconomia y microeconomia.",
+      "Examen de selección académica en macroeconomia y microeconomia.",
     ],
     sourceName: "Portal Oficial del BCRP",
     sourceUrl: "https://www.bcrp.gob.pe/",
@@ -141,7 +145,8 @@ export const opportunities: Opportunity[] = [
   },
   {
     slug: "bcp-trainee-practicas-negocios-banca-analitica-2026",
-    title: "Programa Crece BCP: Practicas en Banca Digital, Analitica y Finanzas",
+    title:
+      "Programa Crece BCP: Prácticas en Banca Digital, Analítica y Finanzas",
     organization: "BANCO DE CREDITO DEL PERU (BCP)",
     sector: "Privado",
     type: "Preprofesional",
@@ -150,25 +155,25 @@ export const opportunities: Opportunity[] = [
     modality: "Hibrido",
     vacancies: 30,
     careers: [
-      "Administracion",
-      "Economia",
-      "Ingenieria Industrial",
-      "Ingenieria de Sistemas",
+      "Administración",
+      "Economía",
+      "Ingeniería Industrial",
+      "Ingeniería de Sistemas",
       "Marketing",
     ],
     endsAt: "2026-10-20",
     stipend: "S/ 1,400 + seguro EPS + bono de bienestar",
     summary:
-      "Forma parte de equipos agiles en transformacion digital, productos financieros, analytics y gestion comercial en el principal banco del pais.",
+      "Forma parte de equipos agiles en transformacion digital, productos financieros, analytics y gestión comercial en el principal banco del pais.",
     requirements: [
       "Estudiantes a partir de 7mo ciclo de universidad.",
-      "Curiosidad analitica y habilidades de comunicacion efectiva.",
+      "Curiosidad analítica y habilidades de comunicación efectiva.",
       "Disponibilidad de 30 horas semanales.",
     ],
     steps: [
-      "Postular a traves del portal de empleos BCP / Talento BCP.",
+      "Postular a través del portal de empleos BCP / Talento BCP.",
       "Evaluaciones psicometricas y pruebas de logica online.",
-      "Dinamica grupal (Assessment Center) con lideres de area.",
+      "Dinamica grupal (Assessment Center) con lideres de área.",
       "Oferta e induccion al programa.",
     ],
     sourceName: "Portal Empleos BCP",
@@ -178,7 +183,8 @@ export const opportunities: Opportunity[] = [
   },
   {
     slug: "contraloria-convocatoria-cas-auditores-asistentes-2026",
-    title: "Convocatoria CAS Nacional: Asistentes de Auditoria y Gestion Publica",
+    title:
+      "Convocatoria CAS Nacional: Asistentes de Auditoría y Gestión Publica",
     organization: "CONTRALORIA GENERAL DE LA REPUBLICA",
     sector: "Publico",
     type: "CAS",
@@ -186,26 +192,21 @@ export const opportunities: Opportunity[] = [
     province: "Arequipa",
     modality: "Presencial",
     vacancies: 12,
-    careers: [
-      "Contabilidad",
-      "Derecho",
-      "Ingenieria Civil",
-      "Administracion",
-    ],
+    careers: ["Contabilidad", "Derecho", "Ingeniería Civil", "Administración"],
     endsAt: "2026-10-18",
-    stipend: "S/ 3,500 - S/ 4,500 segun perfil",
+    stipend: "S/ 3,500 - S/ 4,500 según perfil",
     summary:
-      "Puestos bajo regimen CAS para integrarse a las comisiones de control gubernamental, fiscalizacion y auditoria de obras publicas.",
+      "Puestos bajo regimen CAS para integrarse a las comisiones de control gubernamental, fiscalizacion y auditoria de obras públicas.",
     requirements: [
       "Bachiller o titulado en carreras pertinentes al puesto.",
-      "Experiencia general minima de 1 año en sector publico o privado.",
-      "Conocimientos acreditados en contrataciones del Estado (OSCE) o gestion publica.",
+      "Experiencia general mínima de 1 año en sector público o privado.",
+      "Conocimientos acreditados en contrataciones del Estado (OSCE) o gestión pública.",
       "Habilitacion profesional vigente en colegios respectivos.",
     ],
     steps: [
       "Descargar bases completas y anexos en el portal de la Contraloria.",
       "Registro en el sistema de convocatorias de personal.",
-      "Evaluacion curricular y publicacion de aptos para entrevista.",
+      "Evaluacion curricular y publicación de aptos para entrevista.",
       "Entrevista personal y firma de contrato.",
     ],
     sourceName: "Portal de Convocatorias Contraloria",
@@ -215,7 +216,7 @@ export const opportunities: Opportunity[] = [
   },
   {
     slug: "alicorp-practicas-supply-chain-calidad-industrial-2026",
-    title: "Programa de Practicas en Cadena de Suministro, Calidad y Planta",
+    title: "Programa de Prácticas en Cadena de Suministro, Calidad y Planta",
     organization: "ALICORP",
     sector: "Privado",
     type: "Profesional",
@@ -224,12 +225,12 @@ export const opportunities: Opportunity[] = [
     modality: "Presencial",
     vacancies: 8,
     careers: [
-      "Ingenieria Industrial",
-      "Administracion",
-      "Ingenieria Ambiental",
+      "Ingeniería Industrial",
+      "Administración",
+      "Ingeniería Ambiental",
     ],
     endsAt: "2026-10-25",
-    stipend: "Competitiva + alimentacion cubierta + movilidad",
+    stipend: "Competitiva + alimentación cubierta + movilidad",
     summary:
       "Desarrollate en plantas de produccion de consumo masivo, optimizacion de procesos logisticos y proyectos Lean Six Sigma.",
     requirements: [
@@ -238,8 +239,8 @@ export const opportunities: Opportunity[] = [
       "Manejo de herramientas de analisis de datos (Excel avanzado, Power BI deseable).",
     ],
     steps: [
-      "Postulacion a traves de la plataforma de seleccion de Alicorp.",
-      "Filtros telefonicos y pruebas de competencias tecnicas.",
+      "Postulación a través de la plataforma de selección de Alicorp.",
+      "Filtros telefonicos y pruebas de competencias técnicas.",
       "Entrevista con jefatura de planta.",
     ],
     sourceName: "Alicorp Trabaja con Nosotros",
@@ -249,7 +250,8 @@ export const opportunities: Opportunity[] = [
   },
   {
     slug: "poder-judicial-asistentes-jurisdiccionales-cas-2026",
-    title: "Convocatoria CAS: Asistentes Jurisdiccionales y Notificadores Judiciales",
+    title:
+      "Convocatoria CAS: Asistentes Jurisdiccionales y Notificadores Judiciales",
     organization: "PODER JUDICIAL DEL PERU",
     sector: "Publico",
     type: "CAS",
@@ -257,9 +259,9 @@ export const opportunities: Opportunity[] = [
     province: "Cusco",
     modality: "Presencial",
     vacancies: 15,
-    careers: ["Derecho", "Administracion"],
+    careers: ["Derecho", "Administración"],
     endsAt: "2026-10-16",
-    stipend: "S/ 2,800 - S/ 3,200 segun resolucion administrativa",
+    stipend: "S/ 2,800 - S/ 3,200 según resolucion administrativa",
     summary:
       "Incorporacion de personal para juzgados especializados, apoyo en elaboracion de resoluciones y tramitacion de expedientes judiciales.",
     requirements: [
@@ -268,8 +270,8 @@ export const opportunities: Opportunity[] = [
       "Conocimiento del Sistema de Notificaciones Electronicas (SINOE).",
     ],
     steps: [
-      "Registro en la plataforma de seleccion de personal del Poder Judicial.",
-      "Postulacion electronica a la plaza deseada en la Corte Superior de Cusco.",
+      "Registro en la plataforma de selección de personal del Poder Judicial.",
+      "Postulación electronica a la plaza deseada en la Corte Superior de Cusco.",
       "Revision curricular, examen de conocimientos y entrevista.",
     ],
     sourceName: "Portal de Oportunidades Laborales Poder Judicial",
@@ -279,7 +281,7 @@ export const opportunities: Opportunity[] = [
   },
   {
     slug: "sutran-practicantes-administracion-derecho-sistemas-2026",
-    title: "Practicas para Administracion, Derecho e Ingenieria de Sistemas",
+    title: "Prácticas para Administración, Derecho e Ingeniería de Sistemas",
     organization: "SUTRAN",
     sector: "Publico",
     type: "Preprofesional",
@@ -288,15 +290,15 @@ export const opportunities: Opportunity[] = [
     modality: "Presencial",
     vacancies: 3,
     careers: [
-      "Administracion",
+      "Administración",
       "Derecho",
-      "Ingenieria de Sistemas",
-      "Ingenieria Industrial",
+      "Ingeniería de Sistemas",
+      "Ingeniería Industrial",
     ],
     endsAt: "2026-10-19",
-    stipend: "Subvencion segun bases oficiales",
+    stipend: "Subvención según bases oficiales",
     summary:
-      "Programa dirigido a estudiantes con interes en gestion publica, supervision del transporte terrestre y soporte administrativo.",
+      "Programa dirigido a estudiantes con interes en gestión pública, supervision del transporte terrestre y soporte administrativo.",
     requirements: [
       "Ser estudiante universitario desde los ultimos ciclos.",
       "Contar con disponibilidad para jornada formativa de hasta 30 horas semanales.",
@@ -305,7 +307,7 @@ export const opportunities: Opportunity[] = [
     steps: [
       "Revisar las bases oficiales publicadas.",
       "Preparar CV documentado y constancia de estudios.",
-      "Enviar la postulacion por la mesa de partes virtual indicada.",
+      "Enviar la postulación por la mesa de partes virtual indicada.",
     ],
     sourceName: "Portal institucional SUTRAN",
     sourceUrl: "https://www.gob.pe/sutran",
@@ -314,7 +316,7 @@ export const opportunities: Opportunity[] = [
   },
   {
     slug: "bbva-practicantes-riesgos-finanzas-data-2026",
-    title: "Practicas Preprofesionales en Modelos de Riesgos y Finanzas",
+    title: "Prácticas Preprofesionales en Modelos de Riesgos y Finanzas",
     organization: "BBVA PERU",
     sector: "Privado",
     type: "Preprofesional",
@@ -323,19 +325,19 @@ export const opportunities: Opportunity[] = [
     modality: "Hibrido",
     vacancies: 6,
     careers: [
-      "Economia",
-      "Ingenieria de Sistemas",
+      "Economía",
+      "Ingeniería de Sistemas",
       "Contabilidad",
-      "Administracion",
+      "Administración",
     ],
     endsAt: "2026-10-22",
     stipend: "S/ 1,350 + seguro privado completo",
     summary:
-      "Aprende sobre scoring crediticio, modelado de riesgos financieros y gestion patrimonial en una de las instituciones bancarias lideres.",
+      "Aprende sobre scoring crediticio, modelado de riesgos financieros y gestión patrimonial en una de las instituciones bancarias lideres.",
     requirements: [
       "Estudiantes de 7mo a 9no ciclo.",
       "Conocimientos en SQL, Python o Power BI valorados.",
-      "Capacidad analitica orientada a resolucion de problemas.",
+      "Capacidad analítica orientada a resolucion de problemas.",
     ],
     steps: [
       "Postular en la web de carreras BBVA.",
@@ -349,7 +351,8 @@ export const opportunities: Opportunity[] = [
   },
   {
     slug: "oefa-practicas-derecho-biologia-ingenieria-ambiental-2026",
-    title: "Practicas Profesionales para Derecho, Biologia e Ingenieria Ambiental",
+    title:
+      "Prácticas Profesionales para Derecho, Biología e Ingeniería Ambiental",
     organization: "OEFA",
     sector: "Publico",
     type: "Profesional",
@@ -357,19 +360,15 @@ export const opportunities: Opportunity[] = [
     province: "Huancayo",
     modality: "Presencial",
     vacancies: 4,
-    careers: [
-      "Derecho",
-      "Economia",
-      "Ingenieria Ambiental",
-    ],
+    careers: ["Derecho", "Economía", "Ingeniería Ambiental"],
     endsAt: "2026-10-26",
-    stipend: "Segun modalidad formativa (S/ 1,200 + seguro)",
+    stipend: "Según modalidad formativa (S/ 1,200 + seguro)",
     summary:
-      "Convocatoria para egresados que deseen apoyar la fiscalizacion ambiental y gestion documental tecnica en la region centro.",
+      "Convocatoria para egresados que deseen apoyar la fiscalizacion ambiental y gestión documental técnica en la region centro.",
     requirements: [
       "Ser egresado universitario o bachiller de los periodos 2025 o 2026.",
       "Conocimiento comprobado en normativa ambiental sectorial.",
-      "Disponibilidad para desplazamientos tecnicos de supervision.",
+      "Disponibilidad para desplazamientos técnicos de supervision.",
     ],
     steps: [
       "Descargar bases y anexos oficiales de la web de OEFA.",
@@ -391,19 +390,19 @@ export const opportunities: Opportunity[] = [
     province: "Arequipa",
     modality: "Presencial",
     vacancies: 10,
-    careers: ["Ingenieria Industrial", "Administracion"],
+    careers: ["Ingeniería Industrial", "Administración"],
     endsAt: "2026-10-30",
-    stipend: "Atractivo paquete formativo + capacitacion tecnica de fabrica",
+    stipend: "Atractivo paquete formativo + capacitación técnica de fabrica",
     summary:
-      "Formacion acelerada en gestion de maquinaria pesada, mantenimiento minero y asesoria comercial tecnica de equipos Caterpillar.",
+      "Formacion acelerada en gestión de maquinaria pesada, mantenimiento minero y asesoria comercial técnica de equipos Caterpillar.",
     requirements: [
-      "Egresados de Ingenieria Mecanica, Industrial o afines.",
+      "Egresados de Ingeniería Mecanica, Industrial o afines.",
       "Disponibilidad para rotar en talleres y sedes operativas del sur del pais.",
       "Licencia de conducir de preferencia.",
     ],
     steps: [
       "Envio de CV por plataforma Ferreycorp.",
-      "Dinamica de evaluacion de habilidades tecnicas y de liderazgo.",
+      "Dinamica de evaluación de habilidades técnicas y de liderazgo.",
       "Entrevistas por panel gerencial.",
     ],
     sourceName: "Portal Ferreycorp Talento",
@@ -413,7 +412,8 @@ export const opportunities: Opportunity[] = [
   },
   {
     slug: "minedu-convocatoria-cas-especialistas-gestion-2026",
-    title: "Convocatoria CAS: Especialistas en Monitoreo Educativo y Presupuesto",
+    title:
+      "Convocatoria CAS: Especialistas en Monitoreo Educativo y Presupuesto",
     organization: "MINISTERIO DE EDUCACION (MINEDU)",
     sector: "Publico",
     type: "CAS",
@@ -421,20 +421,20 @@ export const opportunities: Opportunity[] = [
     province: "San Borja",
     modality: "Hibrido",
     vacancies: 5,
-    careers: ["Administracion", "Economia", "Contabilidad"],
+    careers: ["Administración", "Economía", "Contabilidad"],
     endsAt: "2026-10-21",
-    stipend: "S/ 5,000 - S/ 6,500 segun categoria",
+    stipend: "S/ 5,000 - S/ 6,500 según categoria",
     summary:
       "Supervision y ejecucion del presupuesto por resultados en programas de infraestructura y calidad educativa a nivel nacional.",
     requirements: [
       "Titulo universitario colegiado en carreras economicas o administrativas.",
-      "Experiencia minima de 3 años en el sector publico.",
-      "Especializacion en gestion publica o presupuesto por resultados (SIAF).",
+      "Experiencia mínima de 3 años en el sector público.",
+      "Especializacion en gestión pública o presupuesto por resultados (SIAF).",
     ],
     steps: [
       "Registro en el sistema de postulaciones CAS del MINEDU.",
       "Carga de anexos debidamente firmados digitalmente o manuscritos.",
-      "Evaluacion curricular y publicacion de resultados preliminares.",
+      "Evaluacion curricular y publicación de resultados preliminares.",
     ],
     sourceName: "Portal MINEDU Convocatorias CAS",
     sourceUrl: "https://www.gob.pe/minedu",
@@ -443,7 +443,7 @@ export const opportunities: Opportunity[] = [
   },
   {
     slug: "interseguro-practicantes-data-finanzas-operaciones-2026",
-    title: "Programa de Practicas en Analitica de Datos, Finanzas y Procesos",
+    title: "Programa de Prácticas en Analítica de Datos, Finanzas y Procesos",
     organization: "INTERSEGURO",
     sector: "Privado",
     type: "Preprofesional",
@@ -452,16 +452,16 @@ export const opportunities: Opportunity[] = [
     modality: "Hibrido",
     vacancies: 4,
     careers: [
-      "Administracion",
+      "Administración",
       "Contabilidad",
-      "Economia",
-      "Ingenieria de Sistemas",
-      "Ingenieria Industrial",
+      "Economía",
+      "Ingeniería de Sistemas",
+      "Ingeniería Industrial",
     ],
     endsAt: "2026-10-27",
-    stipend: "S/ 1,250 + seguro privado + dias libres por examenes",
+    stipend: "S/ 1,250 + seguro privado + días libres por exámenes",
     summary:
-      "Oportunidad para estudiantes con gusto por la analitica, procesos de seguros, suscripcion y automatizacion de reportes financieros.",
+      "Oportunidad para estudiantes con gusto por la analítica, procesos de seguros, suscripcion y automatizacion de reportes financieros.",
     requirements: [
       "Manejo de Excel y Power BI a nivel intermedio.",
       "Interes por analisis cuantitativo y optimizacion de procesos.",
@@ -482,80 +482,83 @@ export const opportunities: Opportunity[] = [
 export const articles: Article[] = [
   {
     slug: "como-armar-cv-para-practicas",
-    title: "Como armar un CV de alto impacto para practicas sin experiencia previa",
+    title:
+      "Cómo armar un CV de alto impacto para prácticas sin experiencia previa",
     description:
-      "Aprende a estructurar tu perfil academico, voluntariados, proyectos tecnicos y habilidades clave para destacar frente a cientos de postulantes.",
-    category: "CV y Postulacion",
+      "Aprende a estructurar tu perfil académico, voluntariados, proyectos técnicos y habilidades clave para destacar frente a cientos de postulantes.",
+    category: "CV y Postulación",
     readTime: "6 min",
     publishedAt: "2026-10-01",
     body: [
-      "Cuando postulas a tus primeras practicas preprofesionales o profesionales, los reclutadores no esperan una larga trayectoria laboral. Lo que buscan es potencial, disciplina, orden mental y disposicion genuina para aprender rapido.",
-      "Estructura tu documento en una sola pagina: comienza con un breve perfil profesional de 3 a 4 lineas que defina tu carrera, ciclo o condicion de egreso, area de interes y principales fortalezas. Luego, coloca tu formacion academica destacando tercio o quinto superior si aplica.",
-      "Agrega una seccion de 'Proyectos Academicos o Relevantes' donde expliques que problema resolviste en un curso clave, que metodologia o software utilizaste y que resultado alcanzaste. Esto demuestra iniciativa practica.",
-      "Menciona tus conocimientos tecnicos reales (Excel, SQL, Power BI, idiomas) con su nivel correspondiente, evitando graficos de barras o porcentajes subjetivos que confunden al seleccionador.",
+      "Cuando postulas a tus primeras prácticas preprofesionales o profesionales, los reclutadores no esperan una larga trayectoria laboral. Lo que buscan es potencial, disciplina, orden mental y disposicion genuina para aprender rapido.",
+      "Estructura tu documento en una sola pagina: comienza con un breve perfil profesional de 3 a 4 lineas que defina tu carrera, ciclo o condicion de egreso, área de interes y principales fortalezas. Luego, coloca tu formación académica destacando tercio o quinto superior si aplica.",
+      "Agrega una seccion de 'Proyectos Academicos o Relevantes' donde expliques que problema resolviste en un curso clave, que metodologia o software utilizaste y que resultado alcanzaste. Esto demuestra iniciativa práctica.",
+      "Menciona tus conocimientos técnicos reales (Excel, SQL, Power BI, idiomas) con su nivel correspondiente, evitando graficos de barras o porcentajes subjetivos que confunden al seleccionador.",
       "Revisa la ortografia con minuciosidad. Un CV impecable en formato PDF con tipografia legible y margenes comodos proyecta profesionalismo inmediato.",
     ],
   },
   {
     slug: "guia-postulacion-cas-estado-peruano",
-    title: "Guia definitiva para postular a convocatorias CAS en el Estado Peruano",
+    title: "Cómo preparar tu postulación a una convocatoria CAS",
     description:
-      "Paso a paso para entender las bases, descargar y foliar los anexos correctamente, evitar errores de descalificacion y preparar tu entrevista.",
-    category: "Sector Publico",
+      "Paso a paso para entender las bases, descargar y foliar los anexos correctamente, evitar errores de descalificación y preparar tu entrevista.",
+    category: "Sector Público",
     readTime: "8 min",
     publishedAt: "2026-10-02",
     body: [
-      "El regimen de Contratacion Administrativa de Servicios (CAS) es una de las principales puertas de acceso al empleo publico en el Peru. Sin embargo, mas del 40% de postulantes queda descalificado en la primera etapa por descuidos formales.",
-      "El primer paso obligatorio es leer las Bases de la Convocatoria de inicio a fin. Presta atencion estricta al cronograma: las fechas de registro son improrrogables y muchas veces la ventana de postulacion dura un solo dia.",
-      "Verifica con rigor los requisitos minimos: formacion academica solicitada (grado exacto: egresado, bachiller o titulado), colegiatura y habilitacion si se exige, y experiencia laboral sustentada con constancias o certificados que especifiquen fecha de inicio y termino.",
+      "El regimen de Contratacion Administrativa de Servicios (CAS) es una de las principales puertas de acceso al empleo público en el Perú. Sin embargo, mas del 40% de postulantes queda descalificado en la primera etapa por descuidos formales.",
+      "El primer paso obligatorio es leer las Bases de la Convocatoria de inicio a fin. Presta atencion estricta al cronograma: las fechas de registro son improrrogables y muchas veces la ventana de postulación dura un solo dia.",
+      "Verifica con rigor los requisitos minimos: formación académica solicitada (grado exacto: egresado, bachiller o titulado), colegiatura y habilitacion si se exige, y experiencia laboral sustentada con constancias o certificados que especifiquen fecha de inicio y termino.",
       "Completa todos los Anexos obligatorios (Ficha de postulante, declaraciones juradas de no tener antecedentes ni incompatibilidades) tal como lo indica la entidad. No olvides firmar cada hoja y foliar el expediente si las bases lo exigen.",
-      "Para la entrevista personal, investiga la mision, vision y competencias de la entidad, y repasa el marco normativo basico de la funcion publica (Ley N° 27444, codigo de etica de la funcion publica).",
+      "Para la entrevista personal, investiga la mision, vision y competencias de la entidad, y repasa el marco normativo básico de la funcion pública (Ley N° 27444, codigo de etica de la funcion pública).",
     ],
   },
   {
     slug: "diferencias-practicas-preprofesionales-profesionales",
-    title: "Diferencias legales entre practicas preprofesionales y profesionales en Peru",
+    title:
+      "Diferencias legales entre prácticas preprofesionales y profesionales en Perú",
     description:
-      "Conoce tus derechos formativos bajo la Ley N° 28518: jornada maxima semanal, subvencion economica obligatoria, descanso y cobertura de salud.",
+      "Conoce tus derechos formativos bajo la Ley N° 28518: jornada máxima semanal, subvención económica obligatoria, descanso y cobertura de salud.",
     category: "Marco Legal",
     readTime: "5 min",
     publishedAt: "2026-09-28",
     body: [
-      "En el Peru, las modalidades formativas laborales estan reguladas por la Ley N° 28518. Comprender la diferencia entre practicas preprofesionales y profesionales te protegera de acuerdos abusivos o fuera de la ley.",
-      "Practicas Preprofesionales: Estan dirigidas exclusivamente a estudiantes universitarios o de institutos. La jornada maxima es de 30 horas semanales (6 horas diarias), diseñada para no perjudicar tus horarios de estudio.",
-      "Practicas Profesionales: Se orientan a egresados o bachilleres antes de obtener el titulo. La jornada maxima puede extenderse hasta 48 horas semanales (8 horas diarias), y el convenio no puede exceder los 12 meses, salvo casos normativos excepcionales.",
-      "En ambas modalidades, la subvencion economica no puede ser menor a una Remuneracion Minima Vital (RMV) cuando se cumple la jornada maxima completa, y la entidad debe otorgarte seguro de salud (FOLA o EPS) y medio descanso subvencionado por cada seis meses de servicios.",
+      "En el Perú, las modalidades formativas laborales estan reguladas por la Ley N° 28518. Comprender la diferencia entre prácticas preprofesionales y profesionales te protegera de acuerdos abusivos o fuera de la ley.",
+      "Prácticas Preprofesionales: Estan dirigidas exclusivamente a estudiantes universitarios o de institutos. La jornada máxima es de 30 horas semanales (6 horas diarias), diseñada para no perjudicar tus horarios de estudio.",
+      "Prácticas Profesionales: Se orientan a egresados o bachilleres antes de obtener el titulo. La jornada máxima puede extenderse hasta 48 horas semanales (8 horas diarias), y el convenio no puede exceder los 12 meses, salvo casos normativos excepcionales.",
+      "En ambas modalidades, la subvención económica no puede ser menor a una Remuneracion Minima Vital (RMV) cuando se cumple la jornada máxima completa, y la entidad debe otorgarte seguro de salud (FOLA o EPS) y medio descanso subvencionado por cada seis meses de servicios.",
       "Exige siempre un Convenio de Aprendizaje formal firmado por tu institucion educativa, la empresa o entidad, y tu persona.",
     ],
   },
   {
     slug: "como-verificar-convocatoria-oficial",
-    title: "Como verificar si una oferta de trabajo o convocatoria es 100% oficial",
+    title: "Cómo revisar la fuente de una convocatoria",
     description:
-      "Metodos simples para detectar estafas, verificar dominios institucionales y proteger tus datos personales al buscar empleo.",
+      "Métodos simples para detectar estafas, verificar dominios institucionales y proteger tus datos personales al buscar empleo.",
     category: "Seguridad y Alertas",
     readTime: "5 min",
     publishedAt: "2026-09-25",
     body: [
       "Lamentablemente, proliferan falsas convocatorias en redes sociales que buscan lucrar con la necesidad de trabajo de jovenes postulantes. Saber identificar una fuente fidedigna es esencial.",
-      "Regla de oro: Ninguna entidad del Estado ni empresa seria te cobrara jamas por 'derecho de examen', 'tramite de carnet', 'seguro medico de ingreso' o 'materiales de postulacion'. Si te piden dinero, es una estafa.",
-      "Verifica la URL del portal: En el sector publico, las convocatorias oficiales siempre se publican en dominios terminados en '.gob.pe' o en las plataformas institucionales reconocidas (como Talentos Peru de SERVIR o bolsas directas de ministerios).",
+      "Regla de oro: Ninguna entidad del Estado ni empresa seria te cobrara jamas por 'derecho de examen', 'tramite de carnet', 'seguro medico de ingreso' o 'materiales de postulación'. Si te piden dinero, es una estafa.",
+      "Verifica la URL del portal: En el sector público, las convocatorias oficiales siempre se publican en dominios terminados en '.gob.pe' o en las plataformas institucionales reconocidas (como Talentos Perú de SERVIR o bolsas directas de ministerios).",
       "En el sector privado, comprueba que el correo electronico del reclutador pertenezca al dominio corporativo de la empresa (ej. @bcp.com.pe) y no a cuentas gratuitas genericas de Gmail o Hotmail.",
-      "En Convoca Peru, cada publicacion incluye de forma obligatoria el enlace directo y verificado a la fuente oficial de origen para que nunca postules a ciegas.",
+      "Este catálogo de muestra incluye enlaces a los portales de las entidades. Confirma en ellos las convocatorias, sus fechas y las bases oficiales.",
     ],
   },
   {
     slug: "entrevista-laboral-metodo-star",
-    title: "Como responder preguntas conductuales en entrevistas usando el metodo STAR",
+    title:
+      "Cómo responder preguntas conductuales en entrevistas usando el método STAR",
     description:
-      "Aprende a estructurar tus respuestas con la formula Situacion, Tarea, Accion y Resultado para impactar positivamente al entrevistador.",
+      "Aprende a estructurar tus respuestas con la fórmula Situación, Tarea, Acción y Resultado para impactar positivamente al entrevistador.",
     category: "Entrevistas",
     readTime: "6 min",
     publishedAt: "2026-10-03",
     body: [
-      "En los procesos de seleccion modernos, los reclutadores ya no preguntan unicamente por tus conocimientos teoricos, sino como actuaste ante desafios reales: 'Cuentame de una ocasion en que tuviste que trabajar bajo presion'.",
-      "El metodo STAR es el estandar de oro para contestar con claridad y persuasion: S (Situacion) describe brevemente el contexto o problema; T (Tarea) explica tu responsabilidad exacta; A (Accion) detalla las acciones especificas que tu ejecutaste; y R (Resultado) cuantifica el impacto positivo logrado.",
-      "Ejemplo: 'En el 8vo ciclo, nuestro equipo debia entregar una simulacion financiera en dos semanas (Situacion). Como responsable de modelado (Tarea), diseñe un cronograma en Notion y automatice la consolidacion de datos en Excel (Accion), logrando entregar el informe 2 dias antes con la maxima calificacion (Resultado)'.",
+      "En los procesos de selección modernos, los reclutadores ya no preguntan unicamente por tus conocimientos teoricos, sino como actuaste ante desafios reales: 'Cuentame de una ocasion en que tuviste que trabajar bajo presion'.",
+      "El método STAR es el estandar de oro para contestar con claridad y persuasion: S (Situación) describe brevemente el contexto o problema; T (Tarea) explica tu responsabilidad exacta; A (Acción) detalla las acciones especificas que tu ejecutaste; y R (Resultado) cuantifica el impacto positivo logrado.",
+      "Ejemplo: 'En el 8vo ciclo, nuestro equipo debia entregar una simulacion financiera en dos semanas (Situación). Cómo responsable de modelado (Tarea), diseñe un cronograma en Notion y automatice la consolidacion de datos en Excel (Acción), logrando entregar el informe 2 días antes con la máxima calificacion (Resultado)'.",
       "Prepara con anticipacion de 3 a 5 historias STAR relacionadas con trabajo en equipo, resolucion de conflictos, adaptabilidad y liderazgo.",
     ],
   },
@@ -577,8 +580,18 @@ export function formatDate(value: string) {
   }).format(new Date(`${value}T12:00:00-05:00`));
 }
 
-export function daysUntil(value: string) {
-  const now = new Date();
-  const end = new Date(`${value}T23:59:59-05:00`);
-  return Math.ceil((end.getTime() - now.getTime()) / 86_400_000);
+export function daysUntil(value: string, now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Lima",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const part = (type: string) => parts.find((p) => p.type === type)?.value;
+  const today = Date.UTC(
+    Number(part("year")),
+    Number(part("month")) - 1,
+    Number(part("day")),
+  );
+  return Math.round((Date.parse(`${value}T00:00:00Z`) - today) / 86_400_000);
 }

@@ -1,87 +1,102 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4 } from "next/font/google";
+import { Manrope, Inter } from "next/font/google";
 import Link from "next/link";
+import { Brand } from "@/components/Brand";
+import { SiteHeader } from "@/components/SiteHeader";
+import { Icon } from "@/components/Icon";
 import "./globals.css";
+import { indexable, publisherId, adsEnabled } from "@/lib/portal-config";
+import { AdPreferences } from "@/components/AdPreferences";
+export const dynamic = "force-dynamic";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const serif = Source_Serif_4({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-});
-
+const heading = Manrope({ variable: "--font-heading", subsets: ["latin"] });
+const body = Inter({ variable: "--font-body", subsets: ["latin"] });
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://convocaperu.pe";
-
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Convoca Peru | Convocatorias laborales, practicas y CAS en Peru",
-    template: "%s | Convoca Peru",
+    default: "Convoca Perú · Tu próximo paso empieza aquí",
+    template: "%s | Convoca Perú",
   },
   description:
-    "Portal independiente de convocatorias de trabajo, practicas preprofesionales, practicas profesionales y empleo CAS en Peru con fuentes oficiales verificadas.",
-  keywords: [
-    "convocatorias peru",
-    "practicas preprofesionales lima",
-    "practicas profesionales peru",
-    "convocatorias cas 2026",
-    "empleos peru gob pe",
-    "bolsa de trabajo sunat",
-    "practicas bcp",
-  ],
-  authors: [{ name: "Convoca Peru Editorial" }],
-  creator: "Convoca Peru",
+    "Explora convocatorias, prácticas y empleos en Perú. Compara requisitos, guarda tus favoritas y consulta la fuente de cada oportunidad.",
   openGraph: {
-    title: "Convoca Peru | Convocatorias y Practicas Verificadas",
-    description:
-      "Encuentra convocatorias laborales, practicas y guias para postular mejor en Peru sin perderte entre PDFs.",
+    title: "Convoca Perú · Tu próximo paso empieza aquí",
+    description: "Prácticas, empleos y convocatorias CAS en un solo lugar.",
     url: siteUrl,
-    siteName: "Convoca Peru",
+    siteName: "Convoca Perú",
     type: "website",
     locale: "es_PE",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Convoca Peru | Convocatorias Laborales y Practicas",
-    description:
-      "Oportunidades laborales y formativas verificadas en el sector publico y privado del Peru.",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: indexable(), follow: true },
+  other: publisherId()
+    ? { "google-adsense-account": publisherId() }
+    : undefined,
 };
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${inter.variable} ${serif.variable}`}>
+    <html
+      lang="es"
+      data-scroll-behavior="smooth"
+      className={heading.variable + " " + body.variable}
+    >
       <body>
+        <a className="skip-link" href="#contenido">
+          Saltar al contenido
+        </a>
+        <SiteHeader />
         {children}
         <footer className="site-footer">
-          <div style={{ display: "grid", gap: "6px" }}>
-            <p>
-              <strong>Convoca Peru</strong> · Portal independiente de difusion laboral y oportunidades formativas.
-            </p>
-            <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
-              No cobramos por postulaciones. Toda la informacion enlaza de forma transparente a las fuentes
-              oficiales de cada entidad convocante. © {new Date().getFullYear()} Convoca Peru.
-            </p>
+          <div className="container footer-grid">
+            <div className="footer-about">
+              <Brand />
+              <p>
+                Conectamos tu talento con tu próximo paso. Oportunidades y
+                herramientas para construir tu camino profesional.
+              </p>
+              <span className="footer-location">
+                <Icon name="pin" size={16} /> Hecho para el talento del Perú
+              </span>
+            </div>
+            <div>
+              <h2>Encuentra tu oportunidad</h2>
+              <Link href="/convocatorias">Todas las convocatorias</Link>
+              <Link href="/convocatorias?tipo=Preprofesional">
+                Prácticas preprofesionales
+              </Link>
+              <Link href="/convocatorias?tipo=Profesional">
+                Prácticas profesionales
+              </Link>
+              <Link href="/convocatorias?tipo=CAS">Convocatorias CAS</Link>
+            </div>
+            <div>
+              <h2>Estamos para ayudarte</h2>
+              <Link href="/blog">Guías y consejos</Link>
+              <Link href="/guardados">Mis guardados</Link>
+              <Link href="/contacto">Contacto y consultas</Link>
+              <Link href="/nosotros">Sobre Convoca Perú</Link>
+              <Link href="/admin">Preparar convocatoria</Link>
+            </div>
           </div>
-          <div>
-            <Link href="/convocatorias">Convocatorias</Link>
-            <Link href="/blog">Guias</Link>
-            <Link href="/admin">Panel editorial</Link>
-            <Link href="/contacto">Contacto</Link>
-            <Link href="/privacidad">Privacidad</Link>
-            <Link href="/terminos">Terminos</Link>
+          <div className="container footer-bottom">
+            <span>
+              © {new Date().getFullYear()} Convoca Perú. Portal independiente.
+            </span>
+            <div>
+              <Link href="/privacidad">Privacidad</Link>
+              <Link href="/terminos">Términos de uso</Link>
+            </div>
+          </div>
+          <p className="container footer-disclaimer">
+            Verifica siempre las bases y fechas en el portal de la entidad. No
+            gestionamos contrataciones ni cobramos por postular.
+          </p>
+          <div className="container">
+            <AdPreferences enabled={adsEnabled()} />
           </div>
         </footer>
       </body>

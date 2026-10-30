@@ -3,13 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node --env-file=.env.local scripts/serve-local.mjs dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "start:local": "node --env-file=.env.local scripts/serve-local.mjs start",
+    "lint": "eslint",
+    "test": "node scripts/verify-search.mjs && node scripts/verify-import.mjs",
+    "setup:local": "node scripts/setup-local.mjs",
+    "test:backend": "node scripts/verify-backend.mjs",
+    "migrate:supabase": "node --env-file=.env.local scripts/migrate-supabase.mjs",
+    "migrate:supabase:apply": "node --env-file=.env.local scripts/migrate-supabase.mjs --apply"
   },
   "dependencies": {
-    "next": "16.3.6",
+    "cheerio": "1.2.0",
+    "next": "16.4.3",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
@@ -18,7 +25,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.6",
+    "eslint-config-next": "16.4.3",
     "typescript": "^5"
   }
 }

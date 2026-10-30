@@ -1,3 +1,0 @@
-# Convoca Peru - Archivo de autorizacion de inventario publicitario
-# Reemplazar con tu ID de editor de Google AdSense cuando la cuenta sea aprobada:
-# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

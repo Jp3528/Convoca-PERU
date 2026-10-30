@@ -1,188 +1,235 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { daysUntil, formatDate } from "@/lib/data";
 import {
-  daysUntil,
-  formatDate,
-  getOpportunityBySlug,
-  opportunities,
-} from "@/lib/data";
-
-type Props = {
-  params: Promise<{ slug: string }>;
-};
-
-export const revalidate = 3600;
-
-export function generateStaticParams() {
-  return opportunities.map((opportunity) => ({ slug: opportunity.slug }));
-}
+  deadline,
+  display,
+  initials,
+  organizationShort,
+  filterOpportunities,
+} from "@/lib/search";
+import { Icon } from "@/components/Icon";
+import { SaveButton } from "@/components/SavedOpportunities";
+import { ShareButton } from "@/components/ShareButton";
+import { OpportunityCard } from "@/components/OpportunityCard";
+import { getCatalog } from "@/lib/portal-store";
+import { Advertisement } from "@/components/Advertisement";
+type Props = { params: Promise<{ slug: string }> };
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  const opportunity = getOpportunityBySlug(slug);
-
-  if (!opportunity) {
-    return {
-      title: "Convocatoria no encontrada",
-    };
-  }
-
-  return {
-    title: `${opportunity.organization}: ${opportunity.title}`,
-    description: opportunity.summary,
-    alternates: {
-      canonical: `/convocatorias/${opportunity.slug}`,
-    },
-  };
+  const { opportunities } = await getCatalog();
+  const slug = (await params).slug;
+  const o = opportunities.find((item) => item.slug === slug);
+  return o
+    ? {
+        title: o.organization + ": " + o.title,
+        description: o.summary,
+        robots: o.isSample ? { index: false, follow: true } : undefined,
+        alternates: { canonical: "/convocatorias/" + o.slug },
+      }
+    : { title: "Convocatoria no encontrada" };
 }
-
-export default async function OpportunityPage({ params }: Props) {
-  const { slug } = await params;
-  const opportunity = getOpportunityBySlug(slug);
-
-  if (!opportunity) {
-    notFound();
-  }
-
-  const remaining = daysUntil(opportunity.endsAt);
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "JobPosting",
-    title: `${opportunity.organization}: ${opportunity.title}`,
-    description: opportunity.summary,
-    datePosted: `${opportunity.publishedAt}T08:00:00-05:00`,
-    validThrough: `${opportunity.endsAt}T23:59:59-05:00`,
-    employmentType: opportunity.type === "Empleo" ? "FULL_TIME" : "INTERN",
-    hiringOrganization: {
-      "@type": "Organization",
-      name: opportunity.organization,
-    },
-    jobLocation: {
-      "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: opportunity.province ?? opportunity.department,
-        addressRegion: opportunity.department,
-        addressCountry: "PE",
-      },
-    },
-  };
-
+export default async function Detail({ params }: Props) {
+  const { opportunities } = await getCatalog();
+  const slug = (await params).slug;
+  const o = opportunities.find((item) => item.slug === slug);
+  if (!o) notFound();
+  const closed = daysUntil(o.endsAt) < 0;
+  const related = filterOpportunities(
+    opportunities.filter((item) => item.slug !== o.slug),
+    {},
+  )
+    .sort((a, b) => Number(b.type === o.type) - Number(a.type === o.type))
+    .slice(0, 3);
   return (
-    <main className="page-shell">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-        }}
-      />
-
-      <nav className="mini-nav" aria-label="Secciones">
+    <main id="contenido" className="page-shell">
+      <nav className="breadcrumbs" aria-label="Ruta de navegación">
         <Link href="/">Inicio</Link>
+        <span>/</span>
         <Link href="/convocatorias">Convocatorias</Link>
-        <Link href="/blog">Guias</Link>
+        <span>/</span>
+        <span aria-current="page">{organizationShort(o.organization)}</span>
       </nav>
-
-      <header className="page-header">
-        <p className="eyebrow">{opportunity.type}</p>
-        <h1>{opportunity.title}</h1>
-        <p>{opportunity.summary}</p>
-        <div className="detail-meta">
-          <span className="vacancies">{opportunity.vacancies} vacantes</span>
-          <span className={`sector sector-${opportunity.sector.toLowerCase()}`}>
-            {opportunity.sector}
-          </span>
-          <span className="deadline">
-            {remaining < 0
-              ? "Convocatoria finalizada"
-              : remaining === 0
-                ? "Cierra hoy"
-                : `${remaining} dias restantes`}
-          </span>
+      <div className="detail-layout">
+        <div>
+          <header className="detail-heading">
+            <div className="detail-organization">
+              <span className="organization-avatar">
+                {initials(o.organization)}
+              </span>
+              <div>
+                <strong>{organizationShort(o.organization)}</strong>
+                <span>Sector {display(o.sector).toLowerCase()}</span>
+              </div>
+            </div>
+            <div className="job-tags">
+              <span className="type-tag">
+                {o.type === "Preprofesional"
+                  ? "Prácticas preprofesionales"
+                  : o.type === "Profesional"
+                    ? "Prácticas profesionales"
+                    : o.type}
+              </span>
+              <span
+                className={
+                  "deadline " + (closed ? "deadline-closed" : "deadline-active")
+                }
+              >
+                <Icon name="clock" size={15} />
+                {deadline(o.endsAt)}
+              </span>
+            </div>
+            <h1>{o.title}</h1>
+            <p>{o.summary}</p>
+            <div className="detail-quick">
+              <span>
+                <Icon name="pin" size={17} />
+                {display(o.department)}
+              </span>
+              <span>
+                <Icon name="briefcase" size={17} />
+                {display(o.modality)}
+              </span>
+              <span>{o.vacancies} vacantes</span>
+            </div>
+          </header>
+          {o.isSample && (
+            <div className="catalog-note">
+              <span className="sample-dot" />
+              <p>
+                <strong>Convocatoria de muestra.</strong> Los requisitos,
+                importes y fechas de esta ficha no acreditan una oferta real
+                vigente. Confírmalos en el portal de la entidad.
+              </p>
+            </div>
+          )}
+          <article className="detail-card">
+            <section>
+              <h2>Lo esencial de esta oportunidad</h2>
+              <dl className="detail-facts">
+                {[
+                  ["Entidad", o.organization],
+                  [
+                    "Ubicación",
+                    [
+                      display(o.department),
+                      o.province !== o.department ? o.province : "",
+                    ]
+                      .filter(Boolean)
+                      .join(", "),
+                  ],
+                  ["Modalidad", display(o.modality)],
+                  ["Remuneración o subvención", o.stipend],
+                  ["Publicación", formatDate(o.publishedAt)],
+                  ["Fecha de cierre", formatDate(o.endsAt)],
+                ].map(([label, value]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+            <section>
+              <h2>Carreras solicitadas</h2>
+              <div className="career-list">
+                {o.careers.map((c) => (
+                  <span key={c}>{c}</span>
+                ))}
+              </div>
+            </section>
+            <section>
+              <h2>¿Qué necesitas para postular?</h2>
+              <ul className="requirements-list">
+                {o.requirements.map((r) => (
+                  <li key={r}>
+                    <Icon name="check" size={18} />
+                    <span>{r}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <section>
+              <h2>Tu ruta de postulación</h2>
+              <ol className="application-steps">
+                {o.steps.map((s, index) => (
+                  <li key={s}>
+                    <span>{index + 1}</span>
+                    <p>{s}</p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          </article>
         </div>
-      </header>
-
-      <section className="detail-layout">
-        <article className="detail-card">
-          <h2>Datos principales</h2>
-          <dl className="card-facts">
-            <div>
-              <dt>Entidad</dt>
-              <dd>{opportunity.organization}</dd>
-            </div>
-            <div>
-              <dt>Ubicacion</dt>
-              <dd>
-                {opportunity.department}
-                {opportunity.province ? `, ${opportunity.province}` : ""}
-              </dd>
-            </div>
-            <div>
-              <dt>Modalidad</dt>
-              <dd>{opportunity.modality}</dd>
-            </div>
-            <div>
-              <dt>Subvencion</dt>
-              <dd>{opportunity.stipend}</dd>
-            </div>
-            <div>
-              <dt>Publicado</dt>
-              <dd>{formatDate(opportunity.publishedAt)}</dd>
-            </div>
-            <div>
-              <dt>Cierre</dt>
-              <dd>{formatDate(opportunity.endsAt)}</dd>
-            </div>
-          </dl>
-
-          <h2>Carreras solicitadas</h2>
-          <div className="career-list">
-            {opportunity.careers.map((career) => (
-              <span key={career}>{career}</span>
-            ))}
-          </div>
-
-          <h2>Requisitos</h2>
-          <ul>
-            {opportunity.requirements.map((requirement) => (
-              <li key={requirement}>{requirement}</li>
-            ))}
-          </ul>
-
-          <h2>Como postular</h2>
-          <ul>
-            {opportunity.steps.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-          </ul>
-        </article>
-
         <aside className="detail-side">
           <div className="source-box">
-            <p className="eyebrow">Fuente oficial</p>
-            <h3>{opportunity.sourceName}</h3>
+            <span className="source-icon">
+              <Icon name="external" size={25} />
+            </span>
+            <p className="eyebrow">EL SIGUIENTE PASO</p>
+            <h2>
+              {closed
+                ? "Consulta el portal de la entidad"
+                : "Revisa las bases antes de postular"}
+            </h2>
             <p>
-              Antes de postular, revisa la informacion oficial y valida fechas,
-              anexos y requisitos.
+              {closed
+                ? "La fecha de esta convocatoria ya finalizó. Puedes consultar nuevas oportunidades en la entidad."
+                : "El proceso se completa en el sitio de la entidad. Revisa allí el cronograma, los anexos y los requisitos."}
             </p>
+            <div className="source-deadline">
+              <Icon name="clock" size={18} />
+              <div>
+                <span>Fecha de cierre</span>
+                <strong>{formatDate(o.endsAt)}</strong>
+              </div>
+            </div>
             <a
               className="button-primary"
-              href={opportunity.sourceUrl}
+              href={o.sourceUrl}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
-              Ir a la fuente
+              Visitar portal de la entidad <Icon name="external" size={17} />
             </a>
+            <SaveButton slug={o.slug} full />
+            <ShareButton />
+            <small>{o.sourceName}</small>
           </div>
-          <div className="source-box">
-            <p className="eyebrow">Aviso</p>
+          <div className="safety-note">
+            <Icon name="check" size={20} />
             <p>
-              Convoca Peru organiza informacion publica y editorial. No cobra
-              por postulaciones ni reemplaza las bases oficiales.
+              <strong>Tu postulación es personal.</strong> Convoca Perú no
+              solicita pagos ni recibe documentos para este proceso.
             </p>
           </div>
+          <Link
+            className="text-link"
+            href={"/contacto?convocatoria=" + encodeURIComponent(o.title)}
+          >
+            Reportar un dato de esta ficha <Icon name="arrow" size={16} />
+          </Link>
         </aside>
+      </div>
+      <Advertisement placement="opportunity" eligible={!o.isSample} />
+      <section className="related-section">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">SIGUE EXPLORANDO</p>
+            <h2>Otras oportunidades para ti.</h2>
+          </div>
+          <Link className="text-link" href="/convocatorias">
+            Ver todas <Icon name="arrow" size={17} />
+          </Link>
+        </div>
+        <div className="opportunity-grid">
+          {related.map((item) => (
+            <OpportunityCard key={item.slug} opportunity={item} compact />
+          ))}
+        </div>
       </section>
     </main>
   );
