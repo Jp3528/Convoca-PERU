@@ -150,9 +150,13 @@ assert.ok(
 );
 const stableId = saved[0].id,
   stableCreated = saved[0].created_at;
-const currentForArchive = (await getRecords()).find(r => r.id === stableId);
+const currentForArchive = (await getRecords()).find((r) => r.id === stableId);
 await saveRecord(
-  { ...currentForArchive, status: "archived", revision: currentForArchive.revision + 1 },
+  {
+    ...currentForArchive,
+    status: "archived",
+    revision: currentForArchive.revision + 1,
+  },
   currentForArchive.revision,
 );
 html = fixture("ANALISTA DE PRUEBAS CON CAMBIO OFICIAL");
@@ -225,9 +229,13 @@ const {
   validCronRequest,
   nextAutomaticRun,
 } = load("../src/lib/import-automation.ts");
-const { publicDiscoveries, filterDiscoveries } = load(
-  "../src/lib/discoveries.ts",
-);
+const {
+  publicDiscoveries,
+  filterDiscoveries,
+  filterDiscoveryOpportunities,
+  excludeReviewedDiscoveries,
+  discoveryKey,
+} = load("../src/lib/discoveries.ts");
 process.env.AUTO_IMPORT_ENABLED = "true";
 process.env.AUTO_IMPORT_INTERVAL_MINUTES = "60";
 process.env.LOCAL_IMPORT_WORKER = "true";
@@ -273,10 +281,13 @@ globalThis.fetch = async (url) => {
     return new Response(pro ? "" : "User-agent: *\nAllow: /", {
       status: pro ? 403 : 200,
     });
-  return new Response(pro ? proFixture() : fixture("ANALISTA DE PRUEBAS CON CAMBIO OFICIAL"), {
-    status: !pro && failMtc ? 503 : 200,
-    headers: { "Content-Type": "text/html" },
-  });
+  return new Response(
+    pro ? proFixture() : fixture("ANALISTA DE PRUEBAS CON CAMBIO OFICIAL"),
+    {
+      status: !pro && failMtc ? 503 : 200,
+      headers: { "Content-Type": "text/html" },
+    },
+  );
 };
 const simultaneous = await Promise.all([
   runAutomaticImport(),
@@ -303,6 +314,92 @@ assert.equal(status.scheduler, "local");
 assert.equal(JSON.stringify(status).includes(privateJob.leaseToken), false);
 const discoveries = publicDiscoveries(await getRecords());
 assert.ok(discoveries.some((c) => c.sourceId === "proinversion"));
+const liveCandidate = discoveries.find((c) => c.sourceId === "proinversion");
+assert.match(discoveryKey(liveCandidate), /^hallazgo-[a-z0-9-]+$/);
+assert.equal(
+  publicDiscoveries(await getRecords()).find((c) => c.id === liveCandidate.id)
+    ?.id,
+  liveCandidate.id,
+  "La clave de guardado se conserva después de volver a leer la fuente.",
+);
+assert.ok(
+  filterDiscoveryOpportunities(discoveries, {
+    q: "validacion",
+    departamento: "Lima",
+    tipo: "CAS",
+    sector: "Publico",
+  }).length,
+);
+assert.equal(
+  filterDiscoveryOpportunities([{ ...liveCandidate, type: "Empleo" }], {
+    tipo: "Empleo",
+  }).length,
+  1,
+);
+assert.equal(
+  filterDiscoveryOpportunities(discoveries, { departamento: "Cusco" }).length,
+  0,
+);
+assert.equal(
+  filterDiscoveryOpportunities(discoveries, { modalidad: "Remoto" }).length,
+  0,
+);
+assert.equal(
+  filterDiscoveryOpportunities(discoveries, { sector: "Privado" }).length,
+  0,
+);
+assert.equal(
+  filterDiscoveryOpportunities(discoveries, { estado: "finalizadas" }).length,
+  0,
+);
+assert.equal(
+  filterDiscoveryOpportunities(discoveries, { tipo: "Preprofesional" }).length,
+  0,
+);
+assert.equal(
+  filterDiscoveryOpportunities([{ ...liveCandidate, location: undefined }], {
+    departamento: "Lima",
+  }).length,
+  0,
+);
+assert.equal(
+  filterDiscoveryOpportunities(
+    [{ ...liveCandidate, location: "Lima - San Isidro" }],
+    { departamento: "Lima" },
+  ).length,
+  1,
+);
+assert.equal(
+  filterDiscoveryOpportunities([{ ...liveCandidate, location: "Lima" }], {
+    departamento: "Ica",
+  }).length,
+  0,
+);
+assert.equal(
+  excludeReviewedDiscoveries(discoveries, [
+    {
+      title: liveCandidate.title,
+      endsAt: liveCandidate.endsAt,
+      importProvenance: { candidateId: liveCandidate.id },
+    },
+  ]).some((c) => c.id === liveCandidate.id),
+  false,
+  "Una ficha revisada y su hallazgo no duplican el resultado del buscador.",
+);
+assert.equal(
+  excludeReviewedDiscoveries(
+    [liveCandidate],
+    [
+      {
+        title: liveCandidate.title,
+        endsAt: "2000-01-01",
+        importProvenance: { candidateId: liveCandidate.id },
+      },
+    ],
+  ).length,
+  1,
+  "Una fecha nueva en la fuente conserva el hallazgo aunque haya una ficha antigua.",
+);
 assert.ok(
   filterDiscoveries(discoveries, "validacion Lima", "proinversion").length,
 );

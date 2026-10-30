@@ -9,7 +9,7 @@ Portal de convocatorias y orientación laboral con Next.js 16, React 19 y TypeSc
 - Validación de fuente HTTPS, fecha, requisitos y revisión editorial; control de versiones para evitar sobreescrituras.
 - Consultas guardadas en una bandeja privada, con referencias y estados de atención.
 - Persistencia local en el servidor y conector REST a Supabase para Vercel.
-- Favoritos en el navegador y filtros combinados por carrera, región, sector, modalidad y estado.
+- Favoritos para fichas y hallazgos automáticos en el navegador; búsqueda principal con ambos grupos y filtros según los datos disponibles.
 - Sitemap dinámico, control de indexación y páginas informativas.
 - Bloques de AdSense preparados, ads.txt generado con un ID válido y vista previa local sin solicitudes publicitarias.
 - Una primera guía original publicada y conservada en content/initial-articles.json.
@@ -63,7 +63,7 @@ La versión de producción está publicada en [convoca-peru.vercel.app](https://
 
 En una base nueva, database/005_supabase_initial_setup.sql consolida las migraciones 002, 003 y 004. Para copiar contenido, `npm run migrate:supabase` simula y `npm run migrate:supabase:apply` aplica la copia.
 
-Los anuncios reales están desactivados. Para activarlos se necesitan una cuenta, un sitio aprobado, los identificadores de bloques y el consentimiento configurado en AdSense. Los indicadores del panel son comprobaciones técnicas, no una aprobación de Google.
+La cuenta de AdSense se creó el 30 de octubre de 2026. Google recibió los datos del titular y aceptó registrar convoca-peru.vercel.app. Su identificador público está configurado; los anuncios reales siguen desactivados mientras se completa la conexión, revisión del sitio, bloques y consentimiento. Los indicadores del panel son comprobaciones técnicas, no una aprobación de Google.
 
 ## Estructura
 

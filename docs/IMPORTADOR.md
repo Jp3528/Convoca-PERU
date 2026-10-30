@@ -5,7 +5,7 @@ El servidor consulta fuentes oficiales sin que el administrador pulse un botón 
 ## Frecuencia
 
 - Local: `npm run setup:local` y `npm run dev`, o `npm run build` seguido de `npm run start:local`. El proceso inicia Next y comprueba cada minuto si corresponde buscar. Ejecuta al iniciar si no existe una ejecución reciente y después cada 60 minutos por defecto. El navegador puede estar cerrado; el equipo y el servidor necesitan seguir encendidos. `AUTO_IMPORT_INTERVAL_MINUTES` admite entre 15 y 1440 minutos.
-- Vercel: `vercel.json` prepara una ejecución diaria a las 12:00 UTC, 07:00 de Lima. Hobby puede ejecutarla dentro de esa hora y admite frecuencia diaria; no se presupone un plan de pago. Es necesario desplegar, conectar Supabase, ejecutar las migraciones y configurar `CRON_SECRET` y `AUTO_IMPORT_ENABLED=true`. Este despliegue todavía está pendiente.
+- Vercel: `vercel.json` programa una ejecución diaria a las 12:00 UTC, 07:00 de Lima. Hobby puede ejecutarla dentro de esa hora y admite frecuencia diaria; no se presupone un plan de pago. El despliegue, Supabase, las migraciones, `CRON_SECRET` y `AUTO_IMPORT_ENABLED=true` están configurados desde el 30 de octubre de 2026.
 - No hay temporizadores en páginas públicas ni búsquedas por cada visitante. El panel solo actualiza el estado guardado cada 30 segundos.
 - Si una fuente falla, las demás siguen consultándose. En local se intenta de nuevo en 15 minutos; en Vercel se espera al siguiente cron diario. El estado y los errores aparecen en la pestaña Importar.
 
@@ -25,6 +25,8 @@ Las fuentes se procesan secuencialmente. Un bloqueo con vencimiento impide dos e
 - Los procesos vencidos o archivados dejan de aparecer. También se ocultan los retirados de una consulta completa y los que no se han consultado correctamente en 48 horas. Una búsqueda fallida no borra datos ni se presenta como una lista vacía correcta.
 - Solo se exponen datos de candidatos procedentes de dominios y rutas autorizados; no se exponen correos de consultas, hashes, sesiones ni el estado interno de las ejecuciones.
 - `/descubiertas` permite buscar por puesto, entidad o lugar y filtrar por fuente. No carga bloques publicitarios y tiene noindex. El contenido editorial original conserva sus rutas habituales.
+- El buscador principal de `/convocatorias` incluye hallazgos en un grupo identificado, junto a las fichas editoriales. Filtra por puesto, entidad, referencia, región y tipo cuando la fuente proporciona esos datos. Una modalidad desconocida no se presenta como coincidencia. Una ficha revisada con el mismo candidato, título y fecha evita duplicar el resultado; si cambia el título o el cierre en la fuente, el hallazgo vuelve a mostrarse.
+- Los hallazgos pueden guardarse en el navegador por su identificador estable y aparecen en `/guardados`. Los retirados o vencidos dejan de mostrar una ficha vigente; el usuario puede quitar los guardados que ya no están disponibles.
 
 ## Revisión editorial opcional
 
@@ -43,4 +45,4 @@ La deduplicación utiliza fuente y referencia o identificador de plaza. El hash 
 
 Fuentes de la configuración: [Vercel Cron, protección y gestión](https://vercel.com/docs/cron-jobs/manage-cron-jobs), [frecuencia por plan](https://vercel.com/docs/cron-jobs/usage-and-pricing), [RFC 9309](https://www.rfc-editor.org/rfc/rfc9309.html#section-2.3.1.3).
 
-El scraping aporta hallazgos y enlaces; no activa AdSense ni garantiza su aprobación. La conexión real con Supabase y una ejecución automática remota en sus tablas se verificaron el 30 de octubre de 2026. La programación del cron en Vercel requiere todavía desplegar y configurar sus variables privadas.
+El scraping aporta hallazgos y enlaces; no activa AdSense ni garantiza su aprobación. La conexión real con Supabase, el cron registrado en Vercel y una consulta de ProInversión desde producción se verificaron el 30 de octubre de 2026.

@@ -73,7 +73,7 @@ export type AutomationStatus = {
   state: Omit<ImportJob, "leaseToken" | "leaseUntil"> | null;
 };
 
-export type Discovery = Pick<
+export type Discovery = { id: string } & Pick<
   ImportCandidate,
   | "sourceId"
   | "reference"

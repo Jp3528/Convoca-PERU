@@ -2,7 +2,9 @@
 
 ## Estado actual
 
-El portal está publicado en https://convoca-peru.vercel.app y conectado al proyecto convoca-peru de Supabase desde el 30 de octubre de 2026. Se crearon las tres tablas con RLS y se copiaron 19 registros reales (una guía original y 18 hallazgos). Las muestras y consultas privadas locales se excluyeron. Las variables de producción están configuradas en Vercel; las credenciales se guardaron como Secret. La cuenta de AdSense sigue pendiente y los anuncios permanecen desactivados.
+El portal está publicado en https://convoca-peru.vercel.app y conectado al proyecto convoca-peru de Supabase desde el 30 de octubre de 2026. Se crearon las tres tablas con RLS y se copiaron 19 registros reales (una guía original y 18 hallazgos). Las muestras y consultas privadas locales se excluyeron. Las variables de producción están configuradas en Vercel; las credenciales se guardaron como Secret. La cuenta de AdSense se creó con autorización del titular y país Perú el 30 de octubre de 2026. El titular completó los datos del perfil de pagos y Google confirma su recepción. El formulario de sitios aceptó registrar convoca-peru.vercel.app. El identificador de editor está configurado para la metaetiqueta de verificación y ads.txt. Los anuncios permanecen desactivados.
+
+Pendiente: verificar la conexión del sitio, obtener la revisión de Google y configurar bloques y consentimiento antes de activar anuncios. El registro de la URL no equivale a aprobación. Los datos legales y de pagos permanecen en Google y no se copiaron al repositorio.
 
 ## 1. Crear la base de datos
 
@@ -59,6 +61,8 @@ Google pide contenido propio, útil y original, y evalúa el sitio. No hay una c
 Antes de solicitar la revisión, revisa las fuentes, los enlaces, la información del responsable del portal, el contacto y la privacidad. Activa SITE_INDEXABLE cuando el catálogo real esté listo. Las muestras no se incluyen en el sitemap.
 
 ## 5. Crear la cuenta e integrar sus identificadores
+
+La cuenta ya existe. Estos pasos documentan cómo repetir la instalación; no crees una segunda cuenta para el mismo titular. Google permite crearla sin añadir aún un sitio. Su documentación general limita los subdominios; en esta cuenta se comprobó directamente que el formulario aceptó convoca-peru.vercel.app y lo muestra como sitio que requiere revisión. No fue necesario contratar un dominio para registrarlo. Esto no garantiza que Google apruebe su contenido. [Crear cuenta](https://support.google.com/adsense/answer/7402253?hl=es), [URL del sitio](https://support.google.com/adsense/answer/2784438?hl=es).
 
 1. Registra la cuenta de AdSense y añade el dominio definitivo.
 2. Configura NEXT_PUBLIC_ADSENSE_CLIENT con el ID ca-pub de tu cuenta. El sitio añade la etiqueta de verificación y genera /ads.txt con ese ID.

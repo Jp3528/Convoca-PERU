@@ -2870,6 +2870,27 @@ input[type="checkbox"] {
 .discovery-list-link {
   margin-top: 20px;
 }
+.results-section-heading {
+  margin: 24px 0 18px;
+}
+.results-section-heading h2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+.results-section-heading p {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 14px;
+}
+.listing-discoveries .discovery-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.saved-discoveries {
+  margin-top: 32px;
+}
+.saved-unavailable {
+  flex-wrap: wrap;
+}
 @media (max-width: 1000px) {
   .discovery-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2877,6 +2898,7 @@ input[type="checkbox"] {
 }
 @media (max-width: 700px) {
   .discovery-grid,
+  .listing-discoveries .discovery-grid,
   .discovery-search {
     grid-template-columns: minmax(0, 1fr);
   }

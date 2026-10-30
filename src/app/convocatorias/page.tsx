@@ -4,7 +4,12 @@ import { OpportunityCard } from "@/components/OpportunityCard";
 import { SearchPanel } from "@/components/SearchPanel";
 import { Icon } from "@/components/Icon";
 import { FilterSidebar } from "@/components/FilterSidebar";
-import { getCatalog } from "@/lib/portal-store";
+import { DiscoveryCard } from "@/components/DiscoveryCard";
+import { getCatalog, getDiscoveries } from "@/lib/portal-store";
+import {
+  excludeReviewedDiscoveries,
+  filterDiscoveryOpportunities,
+} from "@/lib/discoveries";
 import { filterOpportunities, display, type Filters } from "@/lib/search";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -19,10 +24,13 @@ export default async function Listings({
   searchParams: Promise<Search>;
 }) {
   const params = await searchParams;
-  const { opportunities, demo } = await getCatalog();
+  const [{ opportunities, demo }, discoveries] = await Promise.all([
+    getCatalog(),
+    getDiscoveries(),
+  ]);
   const first = (key: string) => {
     const v = params[key];
-    return (Array.isArray(v) ? v[0] : v)?.trim() || "";
+    return (Array.isArray(v) ? v[0] : v)?.trim().slice(0, 160) || "";
   };
   const filters: Filters = {
     q: first("q"),
@@ -34,6 +42,11 @@ export default async function Listings({
     orden: first("orden"),
   };
   const filtered = filterOpportunities(opportunities, filters);
+  const automatic = filterDiscoveryOpportunities(
+    excludeReviewedDiscoveries(discoveries, opportunities),
+    filters,
+  );
+  const total = filtered.length + automatic.length;
   function url(changes: Partial<Filters>) {
     const next = { ...filters, ...changes };
     const query = new URLSearchParams();
@@ -152,8 +165,8 @@ export default async function Listings({
         <div className="listing-results">
           <div className="results-toolbar">
             <p>
-              <strong>{filtered.length}</strong>{" "}
-              {filtered.length === 1
+              <strong>{total}</strong>{" "}
+              {total === 1
                 ? "oportunidad encontrada"
                 : "oportunidades encontradas"}
             </p>
@@ -208,13 +221,40 @@ export default async function Listings({
               </p>
             </div>
           )}
-          {filtered.length > 0 ? (
-            <div className="listing-stack">
-              {filtered.map((o) => (
-                <OpportunityCard key={o.slug} opportunity={o} />
-              ))}
-            </div>
-          ) : (
+          {filtered.length > 0 && (
+            <section aria-labelledby="reviewed-results">
+              <div className="results-section-heading">
+                <h2 id="reviewed-results">Fichas editoriales</h2>
+                <p>Requisitos y pasos de postulación organizados para ti.</p>
+              </div>
+              <div className="listing-stack">
+                {filtered.map((o) => (
+                  <OpportunityCard key={o.slug} opportunity={o} />
+                ))}
+              </div>
+            </section>
+          )}
+          {automatic.length > 0 && (
+            <section
+              className="listing-discoveries"
+              aria-labelledby="automatic-results"
+            >
+              <div className="results-section-heading">
+                <h2 id="automatic-results">Encontradas en fuentes oficiales</h2>
+                <p>
+                  {automatic.length} hallazgos automáticos con cierre pendiente.
+                  Verifica las bases: aún no tienen revisión editorial. Los
+                  filtros utilizan solo datos disponibles en la fuente.
+                </p>
+              </div>
+              <div className="discovery-grid">
+                {automatic.map((c) => (
+                  <DiscoveryCard key={c.id} discovery={c} />
+                ))}
+              </div>
+            </section>
+          )}
+          {total === 0 && (
             <div className="empty-state">
               <span className="empty-icon">
                 <Icon name="search" size={32} />

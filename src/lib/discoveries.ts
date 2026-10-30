@@ -4,8 +4,8 @@ import {
   type ImportCandidate,
   type Discovery,
 } from "./import-types";
-import { daysUntil } from "./data";
-import { normalize } from "./search";
+import { daysUntil, type Opportunity } from "./data";
+import { normalize, type Filters } from "./search";
 
 export function publicDiscoveries(
   records: PortalRecord[],
@@ -41,6 +41,7 @@ export function publicDiscoveries(
         return [];
       return [
         {
+          id: r.id,
           sourceId: c.sourceId,
           reference: c.reference,
           title: c.title,
@@ -80,5 +81,47 @@ export function filterDiscoveries(
             (c.location || ""),
         ).includes(word),
       ),
+  );
+}
+
+export function discoveryKey(discovery: Pick<Discovery, "id">) {
+  return "hallazgo-" + discovery.id;
+}
+
+export function excludeReviewedDiscoveries(
+  discoveries: Discovery[],
+  opportunities: Opportunity[],
+) {
+  return discoveries.filter(
+    (c) =>
+      !opportunities.some(
+        (o) =>
+          o.importProvenance?.candidateId === c.id &&
+          o.endsAt === c.endsAt &&
+          normalize(o.title) === normalize(c.title),
+      ),
+  );
+}
+
+export function filterDiscoveryOpportunities(
+  discoveries: Discovery[],
+  filters: Filters,
+) {
+  // The sources do not provide modality, careers or vacancy counts.
+  // Unknown fields must never be presented as a match for those filters.
+  if (
+    filters.modalidad ||
+    filters.estado === "finalizadas" ||
+    (filters.sector && filters.sector !== "Publico")
+  )
+    return [];
+  return filterDiscoveries(discoveries, filters.q || "", "").filter(
+    (c) =>
+      (!filters.tipo || c.type === filters.tipo) &&
+      (!filters.departamento ||
+        (!!c.location &&
+          normalize(c.location)
+            .split(/\s*[,;/–—-]\s*/)
+            .includes(normalize(filters.departamento)))),
   );
 }

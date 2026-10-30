@@ -8,6 +8,7 @@ import { getCatalog, getDiscoveries } from "@/lib/portal-store";
 import { DiscoveryCard } from "@/components/DiscoveryCard";
 import { Advertisement } from "@/components/Advertisement";
 import { filterOpportunities } from "@/lib/search";
+import { excludeReviewedDiscoveries } from "@/lib/discoveries";
 export const dynamic = "force-dynamic";
 const categories: {
   name: string;
@@ -41,8 +42,12 @@ const categories: {
   },
 ];
 export default async function Home() {
-  const { opportunities, articles, demo } = await getCatalog();
-  const discoveries = await getDiscoveries();
+  const [{ opportunities, articles, demo }, foundDiscoveries] =
+    await Promise.all([getCatalog(), getDiscoveries()]);
+  const discoveries = excludeReviewedDiscoveries(
+    foundDiscoveries,
+    opportunities,
+  );
   const recent = filterOpportunities(opportunities, {}).slice(0, 6);
   const active = filterOpportunities(opportunities, {
     estado: "vigentes",
@@ -147,8 +152,9 @@ export default async function Home() {
               <h3>{c.name}</h3>
               <p>{c.text}</p>
               <span className="category-bottom">
-                {opportunities.filter((o) => o.type === c.type).length} en el
-                catálogo <Icon name="arrow" size={18} />
+                {opportunities.filter((o) => o.type === c.type).length +
+                  discoveries.filter((d) => d.type === c.type).length}{" "}
+                para explorar <Icon name="arrow" size={18} />
               </span>
             </Link>
           ))}
@@ -184,41 +190,43 @@ export default async function Home() {
           </p>
         )}
       </section>
-      <section className="opportunities-section">
-        <div className="container">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">ENCUENTRA TU SIGUIENTE RETO</p>
-              <h2>Oportunidades para dar el salto.</h2>
-              <p>Explora el catálogo y encuentra lo que encaja contigo.</p>
+      {recent.length > 0 && (
+        <section className="opportunities-section">
+          <div className="container">
+            <div className="section-heading">
+              <div>
+                <p className="eyebrow">ENCUENTRA TU SIGUIENTE RETO</p>
+                <h2>Oportunidades para dar el salto.</h2>
+                <p>Explora el catálogo y encuentra lo que encaja contigo.</p>
+              </div>
+              <Link className="button-secondary" href="/convocatorias">
+                Ver todas las convocatorias <Icon name="arrow" size={18} />
+              </Link>
             </div>
-            <Link className="button-secondary" href="/convocatorias">
-              Ver todas las convocatorias <Icon name="arrow" size={18} />
-            </Link>
-          </div>
-          {demo && (
-            <div className="catalog-note">
-              <span className="sample-dot" />
-              <p>
-                <strong>Catálogo de demostración</strong> ·{" "}
-                {opportunities.length} convocatorias del catálogo, {active} con
-                fecha de cierre pendiente. Consulta la vigencia real en cada
-                entidad.
-              </p>
+            {demo && (
+              <div className="catalog-note">
+                <span className="sample-dot" />
+                <p>
+                  <strong>Catálogo de demostración</strong> ·{" "}
+                  {opportunities.length} convocatorias del catálogo, {active}{" "}
+                  con fecha de cierre pendiente. Consulta la vigencia real en
+                  cada entidad.
+                </p>
+              </div>
+            )}
+            <div className="opportunity-grid">
+              {recent.map((o) => (
+                <OpportunityCard key={o.slug} opportunity={o} compact />
+              ))}
             </div>
-          )}
-          <div className="opportunity-grid">
-            {recent.map((o) => (
-              <OpportunityCard key={o.slug} opportunity={o} compact />
-            ))}
+            <div className="section-center">
+              <Link className="button-primary" href="/convocatorias">
+                Encontrar mi oportunidad <Icon name="arrow" size={18} />
+              </Link>
+            </div>
           </div>
-          <div className="section-center">
-            <Link className="button-primary" href="/convocatorias">
-              Encontrar mi oportunidad <Icon name="arrow" size={18} />
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
       <div className="container">
         <Advertisement
           placement="home"
@@ -332,9 +340,12 @@ export default async function Home() {
           <details>
             <summary>¿Las convocatorias de esta versión son reales?</summary>
             <p>
-              El catálogo local incluye muestras identificadas para mostrar el
-              funcionamiento del portal. Los plazos y puestos deben confirmarse
-              con cada entidad antes de postular.
+              Los hallazgos automáticos proceden de listados oficiales y están
+              identificados para que compruebes las bases. Las fichas
+              editoriales requieren una revisión antes de publicarse. Confirma
+              siempre los plazos y requisitos en la entidad.
+              {demo &&
+                " Esta vista local también incluye muestras identificadas."}
             </p>
           </details>
           <details>

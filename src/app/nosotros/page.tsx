@@ -14,9 +14,11 @@ export default function About() {
         </p>
         <h2>Cómo trabajamos</h2>
         <p>
-          El equipo editorial revisa las fuentes antes de publicar, redacta
-          resúmenes propios y organiza los requisitos, plazos y pasos de
-          postulación. Las guías ofrecen orientación y ejemplos; las bases
+          El servidor consulta listados oficiales y muestra sus hallazgos con
+          enlaces, fechas y un aviso para verificar las bases. Estas
+          publicaciones automáticas se distinguen de las fichas editoriales, que
+          requieren revisar la fuente y completar requisitos y pasos antes de
+          publicarse. Las guías ofrecen orientación y ejemplos; las bases
           oficiales de cada proceso son la referencia definitiva.
         </p>
         <h2>Tu postulación es directa</h2>

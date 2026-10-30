@@ -42,3 +42,9 @@ Publicado el 30 de octubre de 2026 en https://convoca-peru.vercel.app, desde la 
 - El trabajador periódico local se detuvo para que la programación quede a cargo de Vercel. La vista en 3060 continúa disponible con la automatización local desactivada en ese proceso.
 
 Pruebas visuales: [hallazgos publicados](produccion-hallazgos.png) y [cron registrado](produccion-cron.png).
+
+## Búsqueda y guardados de hallazgos
+
+El 30 de octubre se integraron los hallazgos en el buscador principal, conservando su identificación y verificación pendiente. Las pruebas cubren filtros combinados, región desconocida, tipos CAS y Empleo, exclusión de modalidad no informada y de procesos privados/finalizados, claves estables de guardado y duplicados con fichas editoriales. Una fecha modificada en la fuente mantiene visible el hallazgo aunque exista una ficha anterior.
+
+Pruebas, ESLint y compilación aprobados. En el navegador local conectado a Supabase, buscar analista en Lima y Empleo muestra una oportunidad real. Se guardó, apareció en /guardados, persistió al recargar y se quitó después de la prueba. Vista de 375 px sin desbordamiento horizontal. La etiqueta pública de AdSense y ads.txt se generan con el identificador de la cuenta; la publicidad sigue desactivada.

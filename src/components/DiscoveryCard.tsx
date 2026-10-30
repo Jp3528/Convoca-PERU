@@ -1,6 +1,8 @@
 import type { Discovery } from "@/lib/import-types";
 import { daysUntil, formatDate } from "@/lib/data";
 import { Icon } from "./Icon";
+import { SaveButton } from "./SavedOpportunities";
+import { discoveryKey } from "@/lib/discoveries";
 
 export function DiscoveryCard({ discovery: c }: { discovery: Discovery }) {
   return (
@@ -49,6 +51,7 @@ export function DiscoveryCard({ discovery: c }: { discovery: Discovery }) {
         })}{" "}
         · Lima
       </small>
+      <SaveButton slug={discoveryKey(c)} full />
     </article>
   );
 }
