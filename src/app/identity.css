@@ -1354,6 +1354,13 @@ button:disabled {
   background: #f3f4f7;
   color: #536176;
 }
+.cv-ai-panel > button.text-link {
+  border: 0;
+  background: transparent;
+  padding: 10px 0;
+  min-height: 44px;
+  text-align: left;
+}
 .cv-score-number {
   background: #edf1f8;
   border-color: #c6d0e0;

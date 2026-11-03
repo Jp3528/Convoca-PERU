@@ -4,6 +4,7 @@ import Link from "next/link";
 import { analyzeCv, type CvJob } from "@/lib/cv-analysis";
 import { readCvFile } from "@/lib/cv-file";
 import { validateAdvice, type JobAdvice } from "@/lib/cv-coach-contract";
+import { profileGuide } from "@/lib/cv-profile-guide";
 import { Icon } from "./Icon";
 export function CvAssistant({
   jobs,
@@ -27,6 +28,9 @@ export function CvAssistant({
   const [status, setStatus] = useState("");
   const [adult, setAdult] = useState(false);
   const [advice, setAdvice] = useState<JobAdvice | null>(null);
+  const [adviceSource, setAdviceSource] = useState<"gemini" | "profile">(
+    "gemini",
+  );
   const [aiBusy, setAiBusy] = useState(false);
   const [aiError, setAiError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
@@ -123,6 +127,7 @@ export function CvAssistant({
     const current = selected;
     setAiBusy(true);
     setAiError("");
+    setAdvice(null);
     try {
       const response = await fetch("/api/cv/coach", {
         method: "POST",
@@ -134,9 +139,16 @@ export function CvAssistant({
       if (!response.ok)
         throw new Error(data.error || "No se pudieron obtener consejos.");
       setAdvice(validateAdvice(data.advice));
+      setAdviceSource("gemini");
     } catch (e) {
-      if (!controller.signal.aborted)
-        setAiError(e instanceof Error ? e.message : "Servicio no disponible.");
+      if (!controller.signal.aborted) {
+        setAdvice(profileGuide(publicJob));
+        setAdviceSource("profile");
+        setAiError(
+          (e instanceof Error ? e.message : "La IA no está disponible.") +
+            " A continuación tienes una guía local basada en el perfil publicado.",
+        );
+      }
     } finally {
       if (!controller.signal.aborted) setAiBusy(false);
     }
@@ -318,14 +330,31 @@ export function CvAssistant({
                   ? "Este puesto aún no tiene requisitos extraídos. Consulta primero las bases oficiales."
                   : "Límite: 2 consultas por hora y un máximo compartido de consultas al día. La cuota gratuita puede agotarse."}
           </p>
+          <button
+            className="text-link"
+            type="button"
+            disabled={!publicJob || aiBusy}
+            onClick={() => {
+              if (publicJob) {
+                setAdvice(profileGuide(publicJob));
+                setAdviceSource("profile");
+                setAiError("");
+              }
+            }}
+          >
+            Ver guía del perfil sin usar IA <Icon name="arrow" size={16} />
+          </button>
           {aiError && (
-            <p role="alert" className="form-error">
+            <p role="status" className="cv-disclaimer">
               {aiError}
             </p>
           )}
           {advice && (
             <div aria-live="polite">
               <div className="cv-result-section">
+                {adviceSource === "profile" && (
+                  <p className="eyebrow">GUÍA LOCAL · REQUISITOS PUBLICADOS</p>
+                )}
                 <h3>Qué busca este perfil</h3>
                 <p>{advice.overview}</p>
               </div>
@@ -359,8 +388,9 @@ export function CvAssistant({
                 </ul>
               </div>
               <p className="cv-disclaimer">
-                Contenido generado por IA: puede contener errores. No es una
-                evaluación de tu candidatura. Confirma todo en las bases.
+                {adviceSource === "gemini"
+                  ? "Contenido generado por IA: puede contener errores. No es una evaluación de tu candidatura. Confirma todo en las bases."
+                  : "Guía local basada en los requisitos mostrados. No utiliza IA ni evalúa tu candidatura. Contrasta los datos con las bases vigentes."}
               </p>
             </div>
           )}

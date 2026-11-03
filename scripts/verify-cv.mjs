@@ -21,6 +21,7 @@ const { parseOfficialDetailPage, parseOfficialProfile, safeOfficialDocument } =
   load("../src/lib/job-details.ts");
 const { publicJobDetails } = load("../src/lib/job-public.ts");
 const { filterDiscoveries } = load("../src/lib/discoveries.ts");
+const { profileGuide } = load("../src/lib/cv-profile-guide.ts");
 assert.deepEqual(
   coachRequest({
     jobKey: "hallazgo-aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
@@ -50,6 +51,11 @@ const job = {
 const text =
   "Ana Ejemplo\nana@example.invalid +51 999 111 222\nFormación académica\nBachiller en Contabilidad 2020\nExperiencia laboral\nEntidad A 2021-2025\nGestión de planillas y SIAF.\nHabilidades\nExcel intermedio";
 const result = analyzeCv(text, job);
+const localGuide = validateAdvice(
+  profileGuide({ ...job, privateCv: "PRIVATE_CV_CANARY" }),
+);
+assert.equal(JSON.stringify(localGuide).includes("PRIVATE_CV_CANARY"), false);
+assert.deepEqual(localGuide.priorities, job.requirements);
 assert.ok(result.score >= 0 && result.score <= 100);
 assert.ok(result.matched.includes("siaf"));
 assert.ok(result.matched.includes("planillas"));
