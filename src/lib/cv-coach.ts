@@ -10,7 +10,7 @@ export function coachEnabled() {
 export async function publicJobAdvice(job: CvJob) {
   const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY!,
-    httpOptions: { timeout: 25000, retryOptions: { attempts: 1 } },
+    httpOptions: { timeout: 12000, retryOptions: { attempts: 1 } },
   });
   const response = await ai.models.generateContent({
     model: process.env.GEMINI_MODEL || "gemini-3.1-flash-lite",
@@ -33,4 +33,18 @@ export async function publicJobAdvice(job: CvJob) {
   const output = response.text || "";
   if (output.length > 16000) throw new Error("Respuesta demasiado grande.");
   return validateAdvice(JSON.parse(output));
+}
+
+export function transientCoachError(error: unknown) {
+  if (
+    error &&
+    typeof error === "object" &&
+    "status" in error &&
+    [503, 504].includes(Number(error.status))
+  )
+    return true;
+  return (
+    error instanceof Error &&
+    ["AbortError", "TimeoutError"].includes(error.name)
+  );
 }

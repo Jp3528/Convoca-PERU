@@ -1,6 +1,10 @@
 import { assertOrigin, rateLimit } from "@/lib/editor-auth";
 import { coachRequest } from "@/lib/cv-coach-contract";
-import { coachEnabled, publicJobAdvice } from "@/lib/cv-coach";
+import {
+  coachEnabled,
+  publicJobAdvice,
+  transientCoachError,
+} from "@/lib/cv-coach";
 import { resolveCvJob } from "@/lib/cv-jobs";
 import { readJsonBody, RequestBodyError } from "@/lib/request-body";
 export const runtime = "nodejs";
@@ -81,7 +85,31 @@ export async function POST(request: Request) {
         429,
       );
     stage = "provider";
-    return reply({ advice: await publicJobAdvice(job) });
+    try {
+      return reply({ advice: await publicJobAdvice(job) });
+    } catch (error) {
+      if (!transientCoachError(error)) throw error;
+      // Every provider attempt, including the single retry, consumes shared quota.
+      stage = "retry-limit";
+      if (
+        !(await rateLimit(
+          new Request("https://convoca-peru.invalid"),
+          "cv-global",
+          max,
+          86400,
+        ))
+      )
+        return reply(
+          {
+            error:
+              "Se alcanzó el límite diario de consejos. El análisis local continúa disponible.",
+          },
+          429,
+        );
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      stage = "provider-retry";
+      return reply({ advice: await publicJobAdvice(job) });
+    }
   } catch (error) {
     // Operational metadata only: never log provider messages, prompts, keys or CV text.
     console.error("CV coaching unavailable", {

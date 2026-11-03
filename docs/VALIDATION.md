@@ -8,6 +8,8 @@ Capturas: [portada actual](redisenio-portada-final.png) y [ficha con condiciones
 
 Segunda revisión del 3 de noviembre: identidad azul tinta/coral/papel, DM Sans en encabezados, botones y controles de copia renovados, portada con una convocatoria real destacada, categorías compactas y sección de CV con ilustración nativa. Se comprobó la búsqueda de Derecho + Lima + CAS con una coincidencia real. Anchos de 320 y 375 px sin desbordamiento horizontal. Gemini produjo respuestas estructuradas correctas tanto en el SDK como en la API completa, aunque el proveedor también mostró fallos transitorios que la interfaz gestiona. El contador global se verificó contra Supabase y las cuatro variables necesarias se guardaron en producción con autorización. El valor de la clave no se muestra en pruebas ni documentación.
 
+Publicación del rediseño: commit fa4de3b, despliegue de producción CdjymWyk966wAVvVmAtLMPihmyb8, estado Ready. Portada, buscador y asistente devuelven HTTP 200; editor y cron sin credenciales devuelven 401. Tres páginas y once scripts publicados se revisaron sin encontrar datos privados. Las capturas se renovaron desde producción. El registro de Gemini identificó un 504 del proveedor; se añadió un reintento limitado, con una nueva reserva de cuota antes de cada llamada. Las pruebas cubren recuperación, máximo de dos intentos y cancelación del reintento si se agotó el contador global.
+
 - ESLint, TypeScript, compilación y pruebas de búsqueda.
 - Pruebas de validación editorial, estados, fechas inválidas, URL de la fuente y activación condicionada de anuncios.
 - Instancia HTTP aislada en 3061 con .data-tests: acceso protegido, rechazo de solicitudes de otro origen, creación, publicación, edición, conflicto de versiones, archivo y guías.

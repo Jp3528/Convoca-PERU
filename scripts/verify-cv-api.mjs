@@ -24,7 +24,9 @@ delete process.env.VERCEL;
 let modelCalls = [],
   rateCalls = [],
   blocked = "",
-  mode = "ok";
+  mode = "ok",
+  transientFailures = 0,
+  remainingGlobals = Infinity;
 const good = {
   overview: "Revisa los requisitos publicados.",
   keywords: ["Derecho"],
@@ -49,11 +51,16 @@ Module._load = function (name, ...args) {
       GoogleGenAI: class {
         constructor(options) {
           assert.equal(options.httpOptions.retryOptions.attempts, 1);
-          assert.ok(options.httpOptions.timeout <= 25000);
+          assert.ok(options.httpOptions.timeout <= 12000);
         }
         models = {
           generateContent: async (input) => {
             modelCalls.push(input);
+            if (
+              mode === "unavailable" ||
+              (mode === "transient" && transientFailures++ === 0)
+            )
+              throw Object.assign(new Error("Unavailable"), { status: 504 });
             if (mode === "fail")
               throw new Error("PROVIDER_SECRET_MUST_NOT_LEAK");
             if (mode === "invalid") return { text: '{"overview":"<script>"}' };
@@ -72,7 +79,10 @@ Module._load = function (name, ...args) {
           seconds,
           forwarded: req.headers.get("x-forwarded-for"),
         });
-        return category !== blocked;
+        return (
+          category !== blocked &&
+          (category !== "cv-global" || --remainingGlobals >= 0)
+        );
       },
     };
   if (name === "@/lib/cv-jobs")
@@ -170,6 +180,40 @@ for (const category of ["cv-coach", "cv-global"]) {
   assert.equal(modelCalls.length, before);
 }
 blocked = "";
+mode = "transient";
+transientFailures = 0;
+let previousCalls = modelCalls.length,
+  previousGlobalCalls = rateCalls.filter(
+    (x) => x.category === "cv-global",
+  ).length;
+r = await request();
+assert.equal(r.status, 200);
+assert.equal(modelCalls.length - previousCalls, 2);
+assert.equal(
+  rateCalls.filter((x) => x.category === "cv-global").length -
+    previousGlobalCalls,
+  2,
+);
+assert.equal(modelCalls.at(-1).contents, modelCalls.at(-2).contents);
+mode = "unavailable";
+remainingGlobals = 1;
+previousCalls = modelCalls.length;
+r = await request();
+assert.equal(r.status, 429);
+assert.equal(
+  modelCalls.length - previousCalls,
+  1,
+  "No reintentar cuando se agota el límite global.",
+);
+remainingGlobals = Infinity;
+previousCalls = modelCalls.length;
+r = await request();
+assert.equal(r.status, 503);
+assert.equal(
+  modelCalls.length - previousCalls,
+  2,
+  "Como máximo dos intentos por consulta.",
+);
 mode = "fail";
 r = await request();
 assert.equal(r.status, 503);
