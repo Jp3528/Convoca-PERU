@@ -5,6 +5,7 @@ import { createRequire, Module } from "node:module";
 
 // No external calls or main-catalog writes are allowed in this test process.
 process.env.LOCAL_DATA_DIR = ".data-tests";
+process.env.IMPORT_ENRICH_DETAILS = "false";
 delete process.env.SUPABASE_URL;
 delete process.env.SUPABASE_SERVICE_ROLE_KEY;
 delete process.env.VERCEL;

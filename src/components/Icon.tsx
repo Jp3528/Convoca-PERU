@@ -16,7 +16,8 @@ export type IconName =
   | "filter"
   | "book"
   | "mail"
-  | "download";
+  | "download"
+  | "copy";
 const paths: Record<IconName, React.ReactNode> = {
   search: (
     <>
@@ -92,6 +93,12 @@ const paths: Record<IconName, React.ReactNode> = {
   download: (
     <>
       <path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect x="8" y="8" width="12" height="13" rx="2" />
+      <path d="M15 8V3H3v13h5" />
     </>
   ),
 };

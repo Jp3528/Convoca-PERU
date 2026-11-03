@@ -1,15 +1,11 @@
 import { assertOrigin, rateLimit } from "@/lib/editor-auth";
 import { contactRecord } from "@/lib/portal-validation";
 import { saveRecord } from "@/lib/portal-store";
+import { readJsonBody, RequestBodyError } from "@/lib/request-body";
 export async function POST(request: Request) {
   try {
     assertOrigin(request);
-    if (Number(request.headers.get("content-length")) > 16000)
-      return Response.json(
-        { error: "El mensaje es demasiado largo." },
-        { status: 413 },
-      );
-    const body = await request.json();
+    const body = await readJsonBody(request,16000);
     if (body.website)
       return Response.json(
         { error: "No se pudo registrar el mensaje." },
@@ -49,13 +45,13 @@ export async function POST(request: Request) {
       { ok: true, reference: record.id.slice(0, 8).toUpperCase() },
       { status: 201 },
     );
-  } catch {
+  } catch(error) {
     return Response.json(
       {
         error:
           "La solicitud no es válida. Revisa los datos y vuelve a intentarlo.",
       },
-      { status: 400 },
+      { status: error instanceof RequestBodyError ? error.status : 400 },
     );
   }
 }

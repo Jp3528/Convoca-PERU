@@ -18,6 +18,10 @@ export default function Privacy() {
           se sincronizan entre dispositivos. Puedes quitarlos desde la interfaz
           o borrar los datos del sitio en tu navegador.
         </p>
+        <h2>Asistente de CV</h2>
+        <p>El archivo y el texto de tu CV se procesan en la memoria de tu navegador. No se envían al servidor, a Gemini ni a la entidad convocante. No se guardan en el almacenamiento del navegador. Puedes borrarlos con “Borrar todo”; también se pierden al recargar o cerrar la pestaña. Los archivos descargados permanecen en tu dispositivo.</p>
+        <p>Si solicitas orientación de IA, el servidor envía a Google Gemini únicamente el título, entidad y requisitos públicos de la convocatoria seleccionada. No envía tu CV, nombre, contacto ni el perfil personalizado. La opción requiere confirmar mayoría de edad. En la modalidad gratuita, Google puede usar los datos públicos enviados para mejorar sus productos; consulta las <a className="text-link" href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noopener noreferrer">condiciones de Gemini</a>. La herramienta no muestra publicidad ni carga el servicio de anuncios.</p>
+        <p>La puntuación de estructura y palabras clave es orientativa y se calcula localmente. No equivale al resultado de un ATS, no verifica los antecedentes y no garantiza elegibilidad ni selección.</p>
         <h2>Consultas enviadas</h2>
         <p>
           Al enviar el formulario, recibimos tu nombre, correo, motivo, mensaje

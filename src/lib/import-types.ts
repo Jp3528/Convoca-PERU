@@ -1,4 +1,6 @@
+import type { JobDetails } from "./job-details";
 export type ImportCandidate = {
+  details?: JobDetails;
   externalId?: string;
   type?: "CAS" | "Empleo";
   location?: string;
@@ -25,6 +27,8 @@ export type ImportProvenance = {
 };
 
 export type ImportReport = {
+  detailsEnriched?: number;
+  detailFailures?: number;
   sourceId: string;
   checkedAt: string;
   found: number;
@@ -73,7 +77,7 @@ export type AutomationStatus = {
   state: Omit<ImportJob, "leaseToken" | "leaseUntil"> | null;
 };
 
-export type Discovery = { id: string } & Pick<
+export type Discovery = { id: string; details?: JobDetails; availability: "open" | "upcoming" | "closed" | "stale" | "removed" } & Pick<
   ImportCandidate,
   | "sourceId"
   | "reference"

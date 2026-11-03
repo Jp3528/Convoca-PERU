@@ -6,6 +6,7 @@ import {
   assertOrigin,
   rateLimit,
 } from "@/lib/editor-auth";
+import { readJsonBody } from "@/lib/request-body";
 export async function POST(request: Request) {
   try {
     assertOrigin(request);
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
         { error: "Demasiados intentos. Vuelve a intentarlo en 15 minutos." },
         { status: 429 },
       );
-    const body = await request.json();
+    const body = await readJsonBody(request,2000);
     if (
       typeof body.email !== "string" ||
       body.email.toLowerCase().trim() !==

@@ -3,9 +3,10 @@ import { getRecords, saveRecord } from "@/lib/portal-store";
 import { scanSource } from "@/lib/import-service";
 import { importSources } from "@/lib/import-types";
 import { automationStatus } from "@/lib/import-automation";
+import { readJsonBody } from "@/lib/request-body";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 export async function GET() {
   if (!(await currentEditor()))
@@ -28,11 +29,10 @@ export async function POST(request: Request) {
     return Response.json({ error: "Inicia sesión." }, { status: 401 });
   try {
     assertOrigin(request);
-    const raw = await request.text();
-    if (raw.length > 2000) throw new Error("La solicitud es demasiado grande.");
-    const body = JSON.parse(raw);
+    const body = await readJsonBody(request,2000);
     if (body.action === "scan") {
-      if (!importSources.some((s) => s.id === body.sourceId))
+      const sourceId = typeof body.sourceId === "string" ? body.sourceId : "";
+      if (!importSources.some((s) => s.id === sourceId))
         return Response.json(
           { error: "Selecciona una fuente disponible." },
           { status: 400 },
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
           },
           { status: 429 },
         );
-      const report = await scanSource(body.sourceId);
+      const report = await scanSource(sourceId);
       return Response.json(
         { report, records: await getRecords() },
         { headers: { "Cache-Control": "no-store" } },

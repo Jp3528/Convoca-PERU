@@ -6,6 +6,11 @@ export type OpportunityType =
 export type Sector = "Publico" | "Privado";
 
 export type Opportunity = {
+  startsAt?: string;
+  audience?: string;
+  contractDuration?: string;
+  applicationCost?: string;
+  responsibilities?: string[];
   importProvenance?: ImportProvenance;
   isSample?: boolean;
   slug: string;

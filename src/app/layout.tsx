@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Manrope, Inter } from "next/font/google";
+import { DM_Sans, Inter } from "next/font/google";
 import Link from "next/link";
 import { Brand } from "@/components/Brand";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Icon } from "@/components/Icon";
 import "./globals.css";
+import "./identity.css";
 import { indexable, publisherId, adsEnabled } from "@/lib/portal-config";
 import { AdPreferences } from "@/components/AdPreferences";
 export const dynamic = "force-dynamic";
 
-const heading = Manrope({ variable: "--font-heading", subsets: ["latin"] });
+const heading = DM_Sans({ variable: "--font-heading", subsets: ["latin"] });
 const body = Inter({ variable: "--font-body", subsets: ["latin"] });
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://convocaperu.pe";
 export const metadata: Metadata = {
@@ -77,6 +78,7 @@ export default function RootLayout({
               <h2>Estamos para ayudarte</h2>
               <Link href="/blog">Guías y consejos</Link>
               <Link href="/guardados">Mis guardados</Link>
+              <Link href="/asistente-cv">Asistente de CV y revisión ATS</Link>
               <Link href="/contacto">Contacto y consultas</Link>
               <Link href="/nosotros">Sobre Convoca Perú</Link>
               <Link href="/admin">Preparar convocatoria</Link>

@@ -342,7 +342,8 @@ for (const entry of [record, article.data, ...parallel.map((r) => r.data)])
 assert.equal((await fetch(base + "/convocatorias/" + record.slug)).status, 404);
 assert.equal((await fetch(base + "/blog/" + article.data.slug)).status, 404);
 const ads = await fetch(base + "/ads.txt");
-assert.equal(ads.status, 404);
+assert.ok([200,404].includes(ads.status));
+if (ads.status === 200) assert.match((await ads.text()).trim(), /^google\.com, pub-\d{16}, DIRECT, f08c47fec0942fa0$/);
 const home = await (await fetch(base + "/")).text();
 assert.equal(home.includes("pagead2.googlesyndication.com/pagead/js"), false);
 assert.equal(

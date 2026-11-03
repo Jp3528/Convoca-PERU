@@ -75,6 +75,7 @@ export function EditorDashboard({
             steps: String(fields.steps || "")
               .split("\n")
               .filter(Boolean),
+            responsibilities: String(fields.responsibilities || "").split("\n").filter(Boolean),
             featured: form.has("featured"),
           };
     try {
@@ -513,6 +514,9 @@ export function EditorDashboard({
                       content?.endsAt,
                       "date",
                     )}
+                    {field("startsAt", "Inicio de postulaciones", content?.startsAt, "date", false)}
+                    {field("contractDuration", "Duración del contrato", content?.contractDuration, "text", false)}
+                    {field("applicationCost", "Costo de postulación según las bases", content?.applicationCost, "text", false)}
                     {field(
                       "stipend",
                       "Remuneración o referencia a las bases",
@@ -545,6 +549,8 @@ export function EditorDashboard({
                     "Requisitos * · uno por línea",
                     content?.requirements?.join("\n") || "",
                   )}
+                  {field("audience", "A quién está dirigida · formación y perfil", content?.audience, "text", false)}
+                  {area("responsibilities", "Funciones del puesto · una por línea", content?.responsibilities?.join("\n") || "")}
                   {area(
                     "steps",
                     "Pasos de postulación * · uno por línea",

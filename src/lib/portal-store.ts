@@ -265,6 +265,13 @@ export async function getDiscoveries() {
       : await getRecords();
   return publicDiscoveries(records);
 }
+export async function getDiscovery(id: string) {
+  if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(id)) return null;
+  const records: PortalRecord[] = storageProvider() === "supabase"
+    ? await supabaseRequest("portal_documents?select=*&kind=eq.import&status=eq.draft&id=eq." + id + "&limit=1")
+    : (await getRecords()).filter((r) => r.id === id);
+  return publicDiscoveries(records, new Date(), true)[0] || null;
+}
 export async function claimImportJob(job: ImportJob): Promise<boolean> {
   if (storageProvider() === "unconfigured")
     throw new Error(

@@ -14,6 +14,7 @@ import {
   type ImportReport,
 } from "./import-types";
 import type { PortalRecord } from "./portal-types";
+import { enrichOfficialCandidate } from "./import-enrichment";
 
 const userAgent =
   "ConvocaPeruImporter/1.0 (public job listings; editorial review)";
@@ -174,10 +175,39 @@ export async function scanSource(sourceId: string) {
     );
   const html = await readPublic(source.url);
   const checkedAt = new Date().toISOString();
-  const candidates =
+  let candidates =
     source.id === "mtc-cas"
       ? parseMtcCas(html, checkedAt)
       : parseProinversion(html, checkedAt);
+  let detailsEnriched = 0, detailFailures = 0;
+  if (source.id === "proinversion" && process.env.IMPORT_ENRICH_DETAILS !== "false") {
+    const previous = await getRecords();
+    const existing = new Map(previous.filter((r) => r.kind === "import").map((r) => [r.slug, r.payload as ImportCandidate]));
+    const enriched: ImportCandidate[] = [];
+    let remaining = 8;
+    const detailDeadline = Date.now() + 30000;
+    const previousDetails = (c: ImportCandidate) => existing.get(candidateSlug(c.sourceId, c.externalId || c.reference))?.details;
+    // Refresh unknown/old profiles first so a large list cannot starve later entries.
+    const byOldestProfile = [...candidates].sort((a,b) => (Date.parse(previousDetails(a)?.checkedAt || "") || 0) - (Date.parse(previousDetails(b)?.checkedAt || "") || 0));
+    for (const candidate of byOldestProfile) {
+      const old = existing.get(candidateSlug(candidate.sourceId, candidate.externalId || candidate.reference));
+      if (daysUntil(candidate.endsAt, new Date(checkedAt)) >= 0 && remaining-- > 0 && Date.now() < detailDeadline) {
+        try {
+          enriched.push(await enrichOfficialCandidate(candidate, robots));
+          detailsEnriched++;
+          continue;
+        } catch { detailFailures++; }
+      }
+      enriched.push({ ...candidate, details: old?.details?.listingFingerprint === candidate.fingerprint ? old.details : undefined });
+    }
+    candidates = enriched.map((candidate) => {
+      if (!candidate.details) return candidate;
+      const { checkedAt: _checkedAt, listingFingerprint: _listingFingerprint, ...facts } = candidate.details;
+      void _checkedAt; void _listingFingerprint;
+      return { ...candidate, fingerprint: createHash("sha256").update(JSON.stringify({ listing: candidate.fingerprint, facts })).digest("hex") };
+    });
+  }
   // Parsing is completed and validated before the first write. No missing fields are inferred.
-  return ingestCandidates(candidates, source.id, checkedAt);
+  const report = await ingestCandidates(candidates, source.id, checkedAt);
+  return detailsEnriched || detailFailures ? { ...report, detailsEnriched, detailFailures } : report;
 }

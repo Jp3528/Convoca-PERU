@@ -3,6 +3,7 @@ import { getRecords, saveRecord, storageProvider } from "@/lib/portal-store";
 import { contentRecord } from "@/lib/portal-validation";
 import type { ImportCandidate } from "@/lib/import-types";
 import type { Opportunity } from "@/lib/data";
+import { readJsonBody } from "@/lib/request-body";
 export async function GET() {
   if (!(await currentEditor()))
     return Response.json({ error: "Inicia sesión." }, { status: 401 });
@@ -20,9 +21,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "Inicia sesión." }, { status: 401 });
   try {
     assertOrigin(request);
-    if (Number(request.headers.get("content-length")) > 100000)
-      throw new Error("El contenido es demasiado grande.");
-    const body = await request.json();
+    const body = await readJsonBody(request,100000);
     const previous = body.id
       ? (await getRecords()).find((r) => r.id === body.id)
       : undefined;

@@ -1,21 +1,22 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Brand } from "./Brand";
 import { Icon } from "./Icon";
 import { SavedCount } from "./SavedOpportunities";
 const links = [
   { href: "/convocatorias", label: "Convocatorias" },
-  { href: "/descubiertas", label: "Nuevos hallazgos" },
+  { href: "/asistente-cv", label: "Asistente de CV" },
   { href: "/blog", label: "Guías y consejos" },
   { href: "/contacto", label: "Contacto" },
 ];
 export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
   return (
-    <header className="site-header">
+    <header className="site-header" onKeyDown={event=>{if(event.key==="Escape"&&open){setOpen(false);menuButton.current?.focus();}}}>
       <div className="header-inner">
         <Brand />
         <nav className="desktop-nav" aria-label="Navegación principal">
@@ -44,6 +45,7 @@ export function SiteHeader() {
             Publicar convocatoria <Icon name="arrow" size={16} />
           </Link>
           <button
+            ref={menuButton}
             type="button"
             className="menu-toggle icon-button"
             aria-label={open ? "Cerrar menú" : "Abrir menú"}

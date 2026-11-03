@@ -1,5 +1,13 @@
 # Validación local y Supabase · 30 de octubre de 2026
 
+Actualización del 3 de noviembre: rediseño, fichas y asistente descritos en [ASISTENTE-CV.md](ASISTENTE-CV.md). La lectura de PDF y descarga de un borrador se verificaron con datos ficticios. La ficha de Asesor Legal se contrastó con el PDF oficial y se corrigió en Supabase sin cambiar su estado. Las pruebas HTTP aisladas verifican los nuevos límites de bytes, controles de origen y privacidad. Gemini devolvió errores de disponibilidad; esa dependencia externa queda señalada expresamente en el documento.
+
+Revisión visual en Edge: portada, ficha y asistente; ancho móvil de 375 px sin desplazamiento horizontal tras ajustar los correos largos; menú por teclado con Escape y devolución de foco; rechazo de PDF falso; guardados persistentes tras recargar y retirados después de probar. Se reforzó el contraste de enlaces y nota del pie. La consola del navegador incluye advertencias por atributos bis_skin_checked y un fallo de la extensión eppiocemhmnlbhjplcgkofciiegomcon; no se ocultaron esos errores con cambios en la aplicación. No se realizaron pruebas en un lector de pantalla ni en dispositivos iOS/Android físicos.
+
+Capturas: [portada actual](redisenio-portada-final.png) y [ficha con condiciones visibles](ficha-detallada-desktop.png). Compilación, TypeScript, ESLint, pruebas de código, pruebas HTTP y auditoría de dependencias aprobadas. Veinte archivos públicos y tres páginas revisados sin encontrar secretos; las trazas no incluyen los archivos privados. Esta verificación se realizó antes de publicar el rediseño.
+
+Segunda revisión del 3 de noviembre: identidad azul tinta/coral/papel, DM Sans en encabezados, botones y controles de copia renovados, portada con una convocatoria real destacada, categorías compactas y sección de CV con ilustración nativa. Se comprobó la búsqueda de Derecho + Lima + CAS con una coincidencia real. Anchos de 320 y 375 px sin desbordamiento horizontal. Gemini produjo respuestas estructuradas correctas tanto en el SDK como en la API completa, aunque el proveedor también mostró fallos transitorios que la interfaz gestiona. El contador global se verificó contra Supabase y las cuatro variables necesarias se guardaron en producción con autorización. El valor de la clave no se muestra en pruebas ni documentación.
+
 - ESLint, TypeScript, compilación y pruebas de búsqueda.
 - Pruebas de validación editorial, estados, fechas inválidas, URL de la fuente y activación condicionada de anuncios.
 - Instancia HTTP aislada en 3061 con .data-tests: acceso protegido, rechazo de solicitudes de otro origen, creación, publicación, edición, conflicto de versiones, archivo y guías.

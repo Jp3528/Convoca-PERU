@@ -8,17 +8,21 @@
     "start": "next start",
     "start:local": "node --env-file=.env.local scripts/serve-local.mjs start",
     "lint": "eslint",
-    "test": "node scripts/verify-search.mjs && node scripts/verify-import.mjs",
+    "test": "node scripts/verify-search.mjs && node scripts/verify-import.mjs && node scripts/verify-cv.mjs && node scripts/verify-cv-api.mjs",
     "setup:local": "node scripts/setup-local.mjs",
     "test:backend": "node scripts/verify-backend.mjs",
+    "test:security": "node scripts/verify-security.mjs",
     "migrate:supabase": "node --env-file=.env.local scripts/migrate-supabase.mjs",
     "migrate:supabase:apply": "node --env-file=.env.local scripts/migrate-supabase.mjs --apply"
   },
   "dependencies": {
+    "@google/genai": "^2.32.0",
     "cheerio": "1.2.0",
     "next": "16.4.3",
+    "pdfjs-dist": "^6.4.299",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "unpdf": "^1.9.1"
   },
   "devDependencies": {
     "@types/node": "^20",

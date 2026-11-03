@@ -136,6 +136,11 @@ export function contentRecord(
       modality,
       vacancies,
       careers: list(source.careers),
+      startsAt: source.startsAt ? date(source.startsAt) : undefined,
+      audience: text(source.audience, 1500) || undefined,
+      contractDuration: text(source.contractDuration, 300) || undefined,
+      applicationCost: text(source.applicationCost, 300) || undefined,
+      responsibilities: list(source.responsibilities),
       endsAt: date(source.endsAt),
       stipend: required(
         source.stipend,
@@ -152,6 +157,8 @@ export function contentRecord(
       publishedAt,
       featured: source.featured === true,
     };
+    if (payload.startsAt && payload.startsAt > payload.endsAt)
+      throw new Error("El inicio de postulaciones no puede ser posterior al cierre.");
     if (
       status === "published" &&
       (daysUntil(payload.endsAt) < 0 ||

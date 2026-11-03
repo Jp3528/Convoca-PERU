@@ -6,10 +6,12 @@ import {
 } from "./import-types";
 import { daysUntil, type Opportunity } from "./data";
 import { normalize, type Filters } from "./search";
+import { publicJobDetails } from "./job-public";
 
 export function publicDiscoveries(
   records: PortalRecord[],
   now = new Date(),
+  includeInactive = false,
 ): Discovery[] {
   return records
     .filter((r) => r.kind === "import" && r.status === "draft" && !r.sample)
@@ -30,18 +32,29 @@ export function publicDiscoveries(
       } catch {}
       if (
         !safeSource ||
-        c.noLongerListedAt ||
         !Number.isFinite(age) ||
         age < -60000 ||
-        age > 48 * 3600000 ||
         !/^\d{4}-\d{2}-\d{2}$/.test(c.endsAt) ||
         !Number.isFinite(daysUntil(c.endsAt, now)) ||
-        daysUntil(c.endsAt, now) < 0
+        (!includeInactive &&
+          (c.noLongerListedAt ||
+            age > 48 * 3600000 ||
+            daysUntil(c.endsAt, now) < 0))
       )
         return [];
       return [
         {
           id: r.id,
+          details: publicJobDetails(c.details, now),
+          availability: (c.noLongerListedAt
+            ? "removed"
+            : age > 48 * 3600000
+              ? "stale"
+              : daysUntil(c.endsAt, now) < 0
+                ? "closed"
+                : daysUntil(c.startsAt, now) > 0
+                  ? "upcoming"
+                  : "open") as Discovery["availability"],
           sourceId: c.sourceId,
           reference: c.reference,
           title: c.title,
@@ -78,7 +91,11 @@ export function filterDiscoveries(
             " " +
             c.reference +
             " " +
-            (c.location || ""),
+            (c.location || "") +
+            " " +
+            (c.details?.audience || "") +
+            " " +
+            (c.details?.requirements || []).join(" "),
         ).includes(word),
       ),
   );
@@ -107,7 +124,7 @@ export function filterDiscoveryOpportunities(
   discoveries: Discovery[],
   filters: Filters,
 ) {
-  // The sources do not provide modality, careers or vacancy counts.
+  // Search the public profile text when available, but never infer modality.
   // Unknown fields must never be presented as a match for those filters.
   if (
     filters.modalidad ||
