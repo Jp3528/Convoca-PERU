@@ -181,7 +181,7 @@ export default async function Listings({
                   <input key={k} type="hidden" name={k} value={v} />
                 ) : null,
               )}
-              <label className="sr-only" htmlFor="order">
+              <label htmlFor="order">
                 Orden de resultados
               </label>
               <select

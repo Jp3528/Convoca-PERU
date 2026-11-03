@@ -5,6 +5,10 @@ import { analyzeCv, type CvJob } from "@/lib/cv-analysis";
 import { readCvFile } from "@/lib/cv-file";
 import { validateAdvice, type JobAdvice } from "@/lib/cv-coach-contract";
 import { profileGuide } from "@/lib/cv-profile-guide";
+import {
+  CV_DAILY_PREPARATIONS,
+  reserveCvPreparation,
+} from "@/lib/cv-preparation-limit";
 import { Icon } from "./Icon";
 export function CvAssistant({
   jobs,
@@ -24,6 +28,7 @@ export function CvAssistant({
     null,
   );
   const [reading, setReading] = useState(false);
+  const [preparing, setPreparing] = useState(false);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [adult, setAdult] = useState(false);
@@ -35,10 +40,12 @@ export function CvAssistant({
   const [aiError, setAiError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const generation = useRef(0);
+  const preparationRevision = useRef(0);
   const requestRef = useRef<AbortController | null>(null);
   useEffect(
     () => () => {
       generation.current++;
+      preparationRevision.current++;
       requestRef.current?.abort();
     },
     [],
@@ -54,6 +61,7 @@ export function CvAssistant({
     href: "/convocatorias",
   };
   function clearResult() {
+    preparationRevision.current++;
     setResult(null);
     setError("");
     setStatus("");
@@ -90,7 +98,7 @@ export function CvAssistant({
       if (current === generation.current) setReading(false);
     }
   }
-  function analyze() {
+  async function analyze() {
     setError("");
     setStatus("");
     if (text.trim().length < 100) {
@@ -101,13 +109,38 @@ export function CvAssistant({
       setError("El límite es de 24,000 caracteres.");
       return;
     }
-    setResult(analyzeCv(text, job));
-    setStatus(
-      "Análisis terminado en tu navegador. Revisa los criterios y el borrador.",
-    );
+    const revision = preparationRevision.current;
+    function prepare() {
+      if (revision !== preparationRevision.current) return;
+      const remaining = reserveCvPreparation(window.localStorage);
+      if (remaining === null) {
+        setError(
+          "Ya usaste las 2 preparaciones de hoy. El cupo se renueva a medianoche, hora de Lima.",
+        );
+        return;
+      }
+      setResult(analyzeCv(text, job));
+      setStatus(
+        `Análisis terminado. Preparaciones disponibles hoy en este navegador: ${remaining} de ${CV_DAILY_PREPARATIONS}.`,
+      );
+    }
+    setPreparing(true);
+    try {
+      if (navigator.locks)
+        await navigator.locks.request("convoca-cv-preparation", prepare);
+      else prepare();
+    } catch {
+      if (revision === preparationRevision.current)
+        setError(
+          "No se pudo completar la preparación. Comprueba que tu navegador permita el almacenamiento local.",
+        );
+    } finally {
+      setPreparing(false);
+    }
   }
   function erase() {
     generation.current++;
+    preparationRevision.current++;
     requestRef.current?.abort();
     setText("");
     setCustom("");
@@ -253,13 +286,22 @@ export function CvAssistant({
             recargar.
           </small>
         </div>
+        <p className="cv-quota" id="cv-preparation-quota">
+          {CV_DAILY_PREPARATIONS} preparaciones al día en este navegador. El
+          cupo se renueva a medianoche, hora de Lima.
+        </p>
         <div className="cv-input-actions">
           <button
             className="button-primary"
             onClick={analyze}
-            disabled={reading}
+            disabled={reading || preparing}
+            aria-describedby="cv-preparation-quota"
           >
-            {reading ? "Leyendo en tu dispositivo…" : "Analizar mi CV"}
+            {reading
+              ? "Leyendo en tu dispositivo…"
+              : preparing
+                ? "Preparando…"
+                : "Analizar y preparar mi CV"}
             <Icon name="arrow" size={18} />
           </button>
           <button className="button-secondary" onClick={erase}>
@@ -328,7 +370,7 @@ export function CvAssistant({
                 ? "Selecciona una convocatoria del portal para consultar a Gemini."
                 : !publicJob.requirements.length
                   ? "Este puesto aún no tiene requisitos extraídos. Consulta primero las bases oficiales."
-                  : "Límite: 2 consultas por hora y un máximo compartido de consultas al día. La cuota gratuita puede agotarse."}
+                  : "Gemini permite 2 consultas por conexión cada 24 horas y tiene un cupo diario compartido."}
           </p>
           <button
             className="text-link"

@@ -40,11 +40,11 @@ export async function POST(request: Request) {
     );
   let stage = "connection-limit";
   try {
-    if (!(await rateLimit(request, "cv-coach", 2, 3600)))
+    if (!(await rateLimit(request, "cv-coach-daily", 2, 86400)))
       return reply(
         {
           error:
-            "Has alcanzado el límite de 2 consultas por hora. Puedes seguir usando el análisis local.",
+            "Has alcanzado el límite de 2 consultas con Gemini cada 24 horas. Puedes consultar la guía del perfil.",
         },
         429,
       );

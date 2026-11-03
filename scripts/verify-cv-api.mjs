@@ -172,7 +172,13 @@ assert.ok(
       x.forwarded === null,
   ),
 );
-for (const category of ["cv-coach", "cv-global"]) {
+assert.ok(
+  rateCalls.some(
+    ({ category, max, seconds }) =>
+      category === "cv-coach-daily" && max === 2 && seconds === 86400,
+  ),
+);
+for (const category of ["cv-coach-daily", "cv-global"]) {
   blocked = category;
   const before = modelCalls.length;
   r = await request();
