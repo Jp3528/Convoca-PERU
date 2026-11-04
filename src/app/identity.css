@@ -1303,6 +1303,67 @@ button:disabled {
   border-top: 3px solid var(--brand);
   box-shadow: 0 5px 0 #192e4c06;
 }
+.job-detail-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.job-detail-summary {
+  font-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
+  line-height: 1.65;
+  margin-top: 24px;
+}
+.job-section-nav {
+  background: white;
+  border-bottom: 1px solid var(--line);
+}
+.job-section-nav > .container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  padding-block: 12px;
+}
+.job-section-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-underline-offset: 6px;
+}
+.job-section-nav a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.job-content-section {
+  scroll-margin-top: 110px;
+}
+.deadline-calendar {
+  margin-block: 12px;
+}
+.deadline-calendar > small,
+.deadline-calendar > p {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.deadline-calendar > p:empty {
+  display: none;
+}
+@media (max-width: 700px) {
+  .job-detail-actions > a {
+    width: 100%;
+  }
+  .job-section-nav > .container {
+    gap: 0 20px;
+  }
+}
 .job-documents > a {
   border-radius: 8px;
   border-color: #c8d1dd;

@@ -22,6 +22,53 @@ const { parseOfficialDetailPage, parseOfficialProfile, safeOfficialDocument } =
 const { publicJobDetails } = load("../src/lib/job-public.ts");
 const { filterDiscoveries } = load("../src/lib/discoveries.ts");
 const { profileGuide } = load("../src/lib/cv-profile-guide.ts");
+const { deadlineCalendar } = load("../src/lib/deadline-calendar.ts");
+const calendarEvent = {
+  key: "puesto-real",
+  title: "Analista de inversión, gestión; proyectos\\públicos",
+  organization: "Entidad pública de prueba",
+  endsAt: "2026-12-31",
+  sourceUrl: "https://www.investinperu.pe/convocatorias-laborales/",
+};
+const calendar = deadlineCalendar(
+  calendarEvent,
+  new Date("2026-11-04T12:00:00Z"),
+);
+const unfoldedCalendar = calendar.replace(/\r\n /g, "");
+assert.ok(
+  unfoldedCalendar.includes("DTSTART;VALUE=DATE:20261231\r\nDURATION:P1D"),
+);
+assert.ok(unfoldedCalendar.includes("DTSTAMP:20261104T120000Z"));
+assert.ok(
+  unfoldedCalendar.includes("inversión\\, gestión\\; proyectos\\\\públicos"),
+);
+for (const line of calendar.split("\r\n"))
+  assert.ok(Buffer.byteLength(line) <= 75);
+for (const endsAt of ["2026-02-30", "2026-12-31T12:00:00Z", "", "invalid"])
+  assert.throws(() => deadlineCalendar({ ...calendarEvent, endsAt }));
+for (const sourceUrl of [
+  "javascript:alert(1)",
+  "https://user:password@example.com",
+  "https://example.com\r\nBEGIN:VEVENT",
+])
+  assert.throws(() => deadlineCalendar({ ...calendarEvent, sourceUrl }));
+assert.throws(() =>
+  deadlineCalendar({ ...calendarEvent, key: "x\r\nBEGIN:VEVENT" }),
+);
+const injectedCalendar = deadlineCalendar({
+  ...calendarEvent,
+  title: "Áéíóú 🗓️ ".repeat(20) + "\r\nBEGIN:VALARM",
+  organization: "Entidad\r\nEND:VEVENT\r\nBEGIN:VEVENT",
+  privateCv: "PRIVATE_CV_CANARY",
+});
+assert.equal(injectedCalendar.split("\r\nBEGIN:VEVENT").length, 2);
+assert.equal(injectedCalendar.includes("\r\nBEGIN:VALARM"), false);
+assert.equal(injectedCalendar.includes("PRIVATE_CV_CANARY"), false);
+assert.ok(
+  injectedCalendar.replace(/\r\n /g, "").includes("Áéíóú 🗓️ ".repeat(20)),
+);
+for (const line of injectedCalendar.split("\r\n"))
+  assert.ok(Buffer.byteLength(line) <= 75);
 const { reserveCvPreparation, remainingCvPreparations } = load(
   "../src/lib/cv-preparation-limit.ts",
 );

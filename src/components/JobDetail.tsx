@@ -5,6 +5,7 @@ import { Icon } from "./Icon";
 import { DeadlineBadge } from "./DeadlineBadge";
 import { SaveButton } from "./SavedOpportunities";
 import { ShareButton } from "./ShareButton";
+import { DeadlineCalendarButton } from "./DeadlineCalendarButton";
 
 export function JobDetail({ job: j }: { job: JobView }) {
   const inactive = ["closed", "stale", "removed"].includes(j.availability);
@@ -40,10 +41,18 @@ export function JobDetail({ job: j }: { job: JobView }) {
             {j.reference && <span>· {j.reference}</span>}
           </p>
           <h1>{j.title}</h1>
+          <div className="job-detail-actions">
+            <a className="button-primary" href="#postular">
+              Cómo postular <Icon name="arrow" size={17} />
+            </a>
+            <Link
+              className="button-secondary"
+              href={"/asistente-cv?convocatoria=" + encodeURIComponent(j.key)}
+            >
+              Preparar mi CV para este puesto
+            </Link>
+          </div>
           <p className="job-detail-summary">{j.summary}</p>
-          <a className="text-link" href="#postular">
-            Ver pasos para postular <Icon name="arrow" size={17} />
-          </a>
           <div className="job-metric-grid">
             <div>
               <span>Remuneración o subvención</span>
@@ -82,6 +91,18 @@ export function JobDetail({ job: j }: { job: JobView }) {
           </div>
         </div>
       </section>
+      <nav
+        className="job-section-nav"
+        aria-label="Secciones de la convocatoria"
+      >
+        <div className="container">
+          <a href="#perfil">Perfil y condiciones</a>
+          <a href="#requisitos">Requisitos</a>
+          <a href="#funciones">Funciones</a>
+          <a href="#postular">Cómo postular</a>
+          <a href="#documentos">Documentos oficiales</a>
+        </div>
+      </nav>
       <div className="container job-detail-layout">
         <article className="job-detail-main">
           {(j.sample || !j.reviewed || inactive) && (
@@ -103,8 +124,7 @@ export function JobDetail({ job: j }: { job: JobView }) {
               </p>
             </div>
           )}
-          <section className="job-content-section">
-            <p className="eyebrow">EL PERFIL QUE BUSCA LA ENTIDAD</p>
+          <section className="job-content-section" id="perfil">
             <h2>¿A quién está dirigida?</h2>
             <p>{j.audience}</p>
             <dl className="job-condition-grid">
@@ -134,8 +154,7 @@ export function JobDetail({ job: j }: { job: JobView }) {
               </div>
             </dl>
           </section>
-          <section className="job-content-section">
-            <p className="eyebrow">ANTES DE PREPARAR TUS DOCUMENTOS</p>
+          <section className="job-content-section" id="requisitos">
             <h2>Requisitos para postular</h2>
             {j.requirements.length ? (
               <ul className="job-requirements">
@@ -159,8 +178,7 @@ export function JobDetail({ job: j }: { job: JobView }) {
               </div>
             )}
           </section>
-          <section className="job-content-section">
-            <p className="eyebrow">SOBRE EL TRABAJO</p>
+          <section className="job-content-section" id="funciones">
             <h2>¿En qué consiste el puesto?</h2>
             {j.responsibilities.length ? (
               <ul className="job-requirements">
@@ -179,7 +197,6 @@ export function JobDetail({ job: j }: { job: JobView }) {
             )}
           </section>
           <section className="job-content-section" id="postular">
-            <p className="eyebrow">PASO A PASO</p>
             <h2>Cómo preparar y presentar tu postulación</h2>
             <ol className="application-steps">
               {j.steps.map((text, i) => (
@@ -206,8 +223,7 @@ export function JobDetail({ job: j }: { job: JobView }) {
               entidad.
             </p>
           </section>
-          <section className="job-content-section">
-            <p className="eyebrow">FUENTES PARA TOMAR TU DECISIÓN</p>
+          <section className="job-content-section" id="documentos">
             <h2>Bases y documentos oficiales</h2>
             {j.documents.length ? (
               <div className="job-documents">
@@ -253,7 +269,6 @@ export function JobDetail({ job: j }: { job: JobView }) {
         </article>
         <aside className="job-apply-aside">
           <div className="job-apply-card">
-            <p className="eyebrow">TU PRÓXIMO PASO</p>
             <h2>
               {inactive
                 ? "Revisa el estado oficial"
@@ -292,6 +307,17 @@ export function JobDetail({ job: j }: { job: JobView }) {
               <Icon name="external" size={17} />
             </a>
             <SaveButton slug={j.key} full />
+            {!inactive && !j.sample && (
+              <DeadlineCalendarButton
+                event={{
+                  key: j.key,
+                  title: j.title,
+                  organization: j.organization,
+                  endsAt: j.endsAt,
+                  sourceUrl: j.sourceUrl,
+                }}
+              />
+            )}
             <ShareButton title={j.title} url={j.href} />
             <small>
               La entidad establece el canal, los documentos y la hora de cierre.
