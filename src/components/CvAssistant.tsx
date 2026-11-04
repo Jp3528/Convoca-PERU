@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { analyzeCv, type CvJob } from "@/lib/cv-analysis";
 import { readCvFile } from "@/lib/cv-file";
@@ -7,9 +7,33 @@ import { validateAdvice, type JobAdvice } from "@/lib/cv-coach-contract";
 import { profileGuide } from "@/lib/cv-profile-guide";
 import {
   CV_DAILY_PREPARATIONS,
+  remainingCvPreparations,
   reserveCvPreparation,
 } from "@/lib/cv-preparation-limit";
 import { Icon } from "./Icon";
+
+const quotaChanged = "convoca-cv-quota-changed";
+function subscribeToQuota(refresh: () => void) {
+  window.addEventListener("storage", refresh);
+  window.addEventListener("focus", refresh);
+  window.addEventListener(quotaChanged, refresh);
+  const timer = window.setInterval(refresh, 60000);
+  return () => {
+    window.removeEventListener("storage", refresh);
+    window.removeEventListener("focus", refresh);
+    window.removeEventListener(quotaChanged, refresh);
+    window.clearInterval(timer);
+  };
+}
+function quotaSnapshot() {
+  try {
+    return remainingCvPreparations(window.localStorage);
+  } catch {
+    return null;
+  }
+}
+const serverQuotaSnapshot = () => null;
+
 export function CvAssistant({
   jobs,
   initialKey,
@@ -29,6 +53,11 @@ export function CvAssistant({
   );
   const [reading, setReading] = useState(false);
   const [preparing, setPreparing] = useState(false);
+  const remaining = useSyncExternalStore(
+    subscribeToQuota,
+    quotaSnapshot,
+    serverQuotaSnapshot,
+  );
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [adult, setAdult] = useState(false);
@@ -112,8 +141,9 @@ export function CvAssistant({
     const revision = preparationRevision.current;
     function prepare() {
       if (revision !== preparationRevision.current) return;
-      const remaining = reserveCvPreparation(window.localStorage);
-      if (remaining === null) {
+      const available = reserveCvPreparation(window.localStorage);
+      window.dispatchEvent(new Event(quotaChanged));
+      if (available === null) {
         setError(
           "Ya usaste las 2 preparaciones de hoy. El cupo se renueva a medianoche, hora de Lima.",
         );
@@ -121,7 +151,7 @@ export function CvAssistant({
       }
       setResult(analyzeCv(text, job));
       setStatus(
-        `Análisis terminado. Preparaciones disponibles hoy en este navegador: ${remaining} de ${CV_DAILY_PREPARATIONS}.`,
+        "Análisis terminado. Revisa los criterios y descarga tu borrador.",
       );
     }
     setPreparing(true);
@@ -287,21 +317,25 @@ export function CvAssistant({
           </small>
         </div>
         <p className="cv-quota" id="cv-preparation-quota">
-          {CV_DAILY_PREPARATIONS} preparaciones al día en este navegador. El
-          cupo se renueva a medianoche, hora de Lima.
+          {remaining === null
+            ? `${CV_DAILY_PREPARATIONS} preparaciones al día en este navegador.`
+            : `Preparaciones disponibles hoy: ${remaining} de ${CV_DAILY_PREPARATIONS}.`}{" "}
+          El cupo se renueva a medianoche, hora de Lima.
         </p>
         <div className="cv-input-actions">
           <button
             className="button-primary"
             onClick={analyze}
-            disabled={reading || preparing}
+            disabled={reading || preparing || remaining === 0}
             aria-describedby="cv-preparation-quota"
           >
             {reading
               ? "Leyendo en tu dispositivo…"
               : preparing
                 ? "Preparando…"
-                : "Analizar y preparar mi CV"}
+                : remaining === 0
+                  ? "Cupo diario agotado"
+                  : "Analizar y preparar mi CV"}
             <Icon name="arrow" size={18} />
           </button>
           <button className="button-secondary" onClick={erase}>

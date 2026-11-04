@@ -22,16 +22,26 @@ const { parseOfficialDetailPage, parseOfficialProfile, safeOfficialDocument } =
 const { publicJobDetails } = load("../src/lib/job-public.ts");
 const { filterDiscoveries } = load("../src/lib/discoveries.ts");
 const { profileGuide } = load("../src/lib/cv-profile-guide.ts");
-const { reserveCvPreparation } = load("../src/lib/cv-preparation-limit.ts");
+const { reserveCvPreparation, remainingCvPreparations } = load(
+  "../src/lib/cv-preparation-limit.ts",
+);
 const quotaData = new Map();
 const quotaStorage = {
   getItem: (key) => quotaData.get(key) ?? null,
   setItem: (key, value) => quotaData.set(key, value),
 };
 const beforeMidnight = new Date("2026-11-04T04:59:59Z");
+assert.equal(remainingCvPreparations(quotaStorage, beforeMidnight), 2);
+assert.equal(quotaData.size, 0, "Consultar el cupo no debe consumirlo.");
 assert.equal(reserveCvPreparation(quotaStorage, beforeMidnight), 1);
+assert.equal(remainingCvPreparations(quotaStorage, beforeMidnight), 1);
 assert.equal(reserveCvPreparation(quotaStorage, beforeMidnight), 0);
+assert.equal(remainingCvPreparations(quotaStorage, beforeMidnight), 0);
 assert.equal(reserveCvPreparation(quotaStorage, beforeMidnight), null);
+assert.equal(
+  remainingCvPreparations(quotaStorage, new Date("2026-11-04T05:00:00Z")),
+  2,
+);
 assert.equal(
   reserveCvPreparation(quotaStorage, new Date("2026-11-04T05:00:00Z")),
   1,

@@ -6,15 +6,20 @@ const limaDate = new Intl.DateTimeFormat("en-CA", {
   dateStyle: "short",
 });
 
-export function reserveCvPreparation(storage: Storage, now = new Date()) {
+export function remainingCvPreparations(storage: Storage, now = new Date()) {
   const day = limaDate.format(now);
   const saved = storage.getItem(storageKey);
   const [savedDay, savedCount] = (saved ?? "").split("|");
   const parsed = Number(savedCount);
   const count =
     savedDay === day && Number.isInteger(parsed) && parsed >= 0 ? parsed : 0;
-  if (count >= CV_DAILY_PREPARATIONS) return null;
-  const used = count + 1;
-  storage.setItem(storageKey, `${day}|${used}`);
-  return CV_DAILY_PREPARATIONS - used;
+  return Math.max(0, CV_DAILY_PREPARATIONS - count);
+}
+
+export function reserveCvPreparation(storage: Storage, now = new Date()) {
+  const remaining = remainingCvPreparations(storage, now);
+  if (remaining === 0) return null;
+  const used = CV_DAILY_PREPARATIONS - remaining + 1;
+  storage.setItem(storageKey, `${limaDate.format(now)}|${used}`);
+  return remaining - 1;
 }
