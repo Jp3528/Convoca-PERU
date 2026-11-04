@@ -57,6 +57,15 @@ export const importSources = [
     description:
       "Consulta los procesos externos de la primera página, con puesto, ubicación y fechas de postulación. Excluye concursos internos.",
   },
+  {
+    id: "osiptel-cas",
+    name: "OSIPTEL · Convocatorias CAS",
+    url: "https://www.osiptel.gob.pe/vigente-cas/",
+    detailPath: "/convocatorias-laborales/",
+    organization: "OSIPTEL",
+    description:
+      "Consulta el listado CAS vigente y verifica las fechas de postulación en el perfil y cronograma oficial. Excluye procesos sin fechas identificables.",
+  },
 ] as const;
 
 export type ImportJob = {
@@ -77,7 +86,11 @@ export type AutomationStatus = {
   state: Omit<ImportJob, "leaseToken" | "leaseUntil"> | null;
 };
 
-export type Discovery = { id: string; details?: JobDetails; availability: "open" | "upcoming" | "closed" | "stale" | "removed" } & Pick<
+export type Discovery = {
+  id: string;
+  details?: JobDetails;
+  availability: "open" | "upcoming" | "closed" | "stale" | "removed";
+} & Pick<
   ImportCandidate,
   | "sourceId"
   | "reference"

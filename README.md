@@ -13,7 +13,7 @@ Portal de convocatorias y orientación laboral con Next.js 16, React 19 y TypeSc
 - Sitemap dinámico, control de indexación y páginas informativas.
 - Bloques de AdSense preparados, ads.txt generado con un ID válido y vista previa local sin solicitudes publicitarias.
 - Una primera guía original publicada y conservada en content/initial-articles.json.
-- Scraping automático del MTC y ProInversión: ejecución cada hora en local y cron diario en Vercel. Deduplicación, detección de cambios y sección pública de hallazgos vigentes que requieren verificar las bases. Consulta [el funcionamiento y límites](docs/IMPORTADOR.md).
+- Scraping automático del MTC, ProInversión y OSIPTEL: ejecución cada hora en local y cron diario en Vercel. Deduplicación, detección de cambios y sección pública de hallazgos vigentes que requieren verificar las bases. OSIPTEL comprueba las fechas de postulación en el cronograma PDF. Consulta [el funcionamiento y límites](docs/IMPORTADOR.md).
 
 El catálogo local conserva convocatorias y guías de muestra identificadas. En Supabase no se cargan muestras automáticamente. Una casilla de revisión editorial representa la revisión que debe realizar el administrador; no verifica automáticamente una oferta en Internet.
 

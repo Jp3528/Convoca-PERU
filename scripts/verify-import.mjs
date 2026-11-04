@@ -29,6 +29,88 @@ const { parseMtcCas, parseProinversion, robotsAllows } = load(
   "../src/lib/import-parser.ts",
 );
 const { scanSource, ingestCandidates } = load("../src/lib/import-service.ts");
+const {
+  parseOsiptelListing,
+  parseOsiptelProfile,
+  osiptelDocuments,
+  osiptelCandidates,
+} = load("../src/lib/osiptel-import.ts");
+const osiptelEmpty =
+  "<h1>VIGENTE CAS</h1><table><tr><th>CAS N°</th><th>Convocatoria</th><th></th></tr></table>";
+const osiptelFixture = osiptelEmpty.replace(
+  "</table>",
+  '<tr><td>063-2026</td><td>Asistente de gestión documental</td><td><a class="btn_abrir" href="/convocatorias-laborales/cas-n-063-2026-osiptel-asistente/">Ver más</a></td></tr></table>',
+);
+const osiptelProfile =
+  "PROCESO DE SELECCIÓN CAS N°063-2026-OSIPTEL (01 VACANTE) Objeto de la Convocatoria: Apoyar la gestión documental. 2. Dependencia Perfil Formación Académica, grado académico y/o nivel de estudios Egresado en Administración. Cursos y Programas de especialización requeridos y sustentados con documentos. Curso en Gestión Pública. Conocimientos técnicos para el puesto: Archivo. IV.- CONDICIONES Remuneración mensual S/ 3,364.19 V. CRONOGRAMA PUBLICACIÓN Del 03/11/2026 al 16/11/2026 POSTULACIÓN: Presenta la ficha el 16/11/2026 EVALUACIONES 17/11/2026";
+assert.equal(parseOsiptelListing(osiptelEmpty).length, 0);
+assert.equal(parseOsiptelListing(osiptelFixture)[0].reference, "CAS 063-2026");
+for (const prefix of [
+  "https://attacker.invalid",
+  "https://www.osiptel.gob.pe.attacker.invalid",
+])
+  assert.throws(
+    () =>
+      parseOsiptelListing(
+        osiptelFixture.replace(
+          'href="/convocatorias',
+          `href="${prefix}/convocatorias`,
+        ),
+      ),
+    /autorizado/,
+  );
+assert.throws(
+  () => parseOsiptelListing("<h1>Acceso bloqueado</h1>"),
+  /formato/,
+);
+assert.equal(
+  parseOsiptelProfile(osiptelProfile, "CAS 063-2026").startsAt,
+  "2026-11-16",
+  "Usar postulación, no el periodo de publicidad.",
+);
+assert.equal(
+  parseOsiptelProfile(osiptelProfile, "CAS 063-2026").facts.stipend,
+  "S/ 3,364.19",
+);
+assert.equal(
+  parseOsiptelProfile(
+    osiptelProfile.replace("S/ 3,364.19", "S/ S/. 12,364.19"),
+    "CAS 063-2026",
+  ).facts.stipend,
+  "S/. 12,364.19",
+);
+assert.throws(
+  () =>
+    parseOsiptelProfile(
+      osiptelProfile.replace("el 16/11/2026", "el 31/02/2026"),
+      "CAS 063-2026",
+    ),
+  /fechas válidas/,
+);
+assert.throws(
+  () => parseOsiptelProfile(osiptelProfile, "CAS 001-2026"),
+  /no corresponde/,
+);
+assert.deepEqual(
+  osiptelDocuments(
+    '<table><tr><th>Descripción</th><th>Archivo</th></tr><tr><td>Puesto</td><td><a href="/media/abc/perfil.pdf">PDF</a></td></tr></table>',
+  ),
+  [
+    {
+      label: "Perfil y cronograma",
+      url: "https://www.osiptel.gob.pe/media/abc/perfil.pdf",
+    },
+  ],
+);
+await assert.rejects(
+  () =>
+    osiptelCandidates(
+      osiptelFixture,
+      "User-agent: *\nDisallow: /",
+      new Date().toISOString(),
+    ),
+  /no permite/,
+);
 const { getRecords, getCatalog, saveRecord, getImportJob, finishImportJob } =
   load("../src/lib/portal-store.ts");
 const tag = String(Date.now());
@@ -275,17 +357,22 @@ let failMtc = false,
 globalThis.fetch = async (url) => {
   automaticCalls++;
   const target = new URL(url),
-    pro = target.hostname === "www.investinperu.pe";
-  assert.ok(pro || target.hostname === "portal.mtc.gob.pe");
+    pro = target.hostname === "www.investinperu.pe",
+    osiptel = target.hostname === "www.osiptel.gob.pe";
+  assert.ok(pro || osiptel || target.hostname === "portal.mtc.gob.pe");
   const robot = target.pathname === "/robots.txt";
   if (robot)
     return new Response(pro ? "" : "User-agent: *\nAllow: /", {
       status: pro ? 403 : 200,
     });
   return new Response(
-    pro ? proFixture() : fixture("ANALISTA DE PRUEBAS CON CAMBIO OFICIAL"),
+    pro
+      ? proFixture()
+      : osiptel
+        ? osiptelEmpty
+        : fixture("ANALISTA DE PRUEBAS CON CAMBIO OFICIAL"),
     {
-      status: !pro && failMtc ? 503 : 200,
+      status: !pro && !osiptel && failMtc ? 503 : 200,
       headers: { "Content-Type": "text/html" },
     },
   );
@@ -296,17 +383,17 @@ const simultaneous = await Promise.all([
 ]);
 const completed = simultaneous.find((r) => r.status);
 assert.equal(completed.status, "success");
-assert.equal(completed.reports.length, 2);
+assert.equal(completed.reports.length, 3);
 assert.equal(
   simultaneous.filter((r) => r.skipped).length,
   1,
   "Dos llamadas al cron solo ejecutan una búsqueda.",
 );
-assert.equal(automaticCalls, 4);
+assert.equal(automaticCalls, 6);
 assert.equal((await runAutomaticImport()).skipped, "not_due");
 assert.equal(
   automaticCalls,
-  4,
+  6,
   "No se consulta la fuente antes de la próxima ejecución.",
 );
 const status = await automationStatus(),
@@ -442,7 +529,7 @@ await dueAgain();
 failMtc = true;
 const partial = await runAutomaticImport();
 assert.equal(partial.status, "partial");
-assert.equal(partial.reports.length, 1);
+assert.equal(partial.reports.length, 2);
 assert.equal(partial.errors[0].sourceId, "mtc-cas");
 await ingestCandidates([], "proinversion", new Date().toISOString());
 assert.equal(
@@ -455,5 +542,5 @@ assert.equal(
 globalThis.fetch = originalFetch;
 // One active candidate is intentionally retained ONLY in .data-tests for HTTP linkage tests.
 console.log(
-  "Importador verificado: dos fuentes, fechas, robots, deduplicación, ejecución automática exclusiva, próxima búsqueda, fallos por fuente y hallazgos públicos sin datos privados.",
+  "Importador verificado: tres fuentes, fechas de postulación, robots, deduplicación, ejecución automática exclusiva, fallos por fuente y hallazgos públicos sin datos privados.",
 );

@@ -53,6 +53,8 @@ export function CvAssistant({
   );
   const [reading, setReading] = useState(false);
   const [preparing, setPreparing] = useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [pdfMessage, setPdfMessage] = useState("");
   const remaining = useSyncExternalStore(
     subscribeToQuota,
     quotaSnapshot,
@@ -94,6 +96,7 @@ export function CvAssistant({
     setResult(null);
     setError("");
     setStatus("");
+    setPdfMessage("");
   }
   function changeJob(key: string) {
     requestRef.current?.abort();
@@ -181,6 +184,7 @@ export function CvAssistant({
     setReading(false);
     setAiBusy(false);
     setStatus("Se borraron el CV y sus resultados de esta pantalla.");
+    setPdfMessage("");
     if (fileRef.current) fileRef.current.value = "";
   }
   async function getAdvice() {
@@ -230,6 +234,55 @@ export function CvAssistant({
     a.download = "mi-cv-revisado.txt";
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  async function downloadPdf() {
+    if (!result || pdfBusy) return;
+    const revision = preparationRevision.current;
+    setPdfBusy(true);
+    setPdfMessage("");
+    try {
+      const [{ createCvPdf }, regular, bold] = await Promise.all([
+        import("@/lib/cv-pdf"),
+        fetch("/fonts/inter-latin-400.ttf", {
+          signal: AbortSignal.timeout(10000),
+          cache: "force-cache",
+        }),
+        fetch("/fonts/inter-latin-700.ttf", {
+          signal: AbortSignal.timeout(10000),
+          cache: "force-cache",
+        }),
+      ]);
+      if (!regular.ok || !bold.ok)
+        throw new Error(
+          "No se pudieron cargar las fuentes. Intenta de nuevo o descarga el TXT.",
+        );
+      if (revision !== preparationRevision.current) return;
+      const bytes = await createCvPdf(result.draft, job, {
+        regular: new Uint8Array(await regular.arrayBuffer()),
+        bold: new Uint8Array(await bold.arrayBuffer()),
+      });
+      if (revision !== preparationRevision.current) return;
+      const url = URL.createObjectURL(
+        new Blob([new Uint8Array(bytes)], { type: "application/pdf" }),
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "mi-cv-revisado.pdf";
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setPdfMessage(
+        "PDF preparado en tu dispositivo. Revísalo antes de enviarlo a la entidad.",
+      );
+    } catch (error) {
+      if (revision === preparationRevision.current)
+        setPdfMessage(
+          error instanceof Error
+            ? error.message
+            : "No se pudo preparar el PDF. Puedes descargar el TXT.",
+        );
+    } finally {
+      setPdfBusy(false);
+    }
   }
   return (
     <div className="container cv-workspace">
@@ -576,11 +629,23 @@ export function CvAssistant({
                 {result.draft}
               </div>
               <div className="cv-input-actions">
-                <button className="button-primary" onClick={download}>
+                <button
+                  className="button-primary"
+                  onClick={downloadPdf}
+                  disabled={pdfBusy}
+                >
+                  <Icon name="download" size={17} />
+                  {pdfBusy ? "Preparando PDF…" : "Descargar CV en PDF"}
+                </button>
+                <button className="button-secondary" onClick={download}>
                   <Icon name="download" size={17} />
                   Descargar borrador TXT
                 </button>
               </div>
+              <p role="status" className="cv-disclaimer">
+                {pdfMessage ||
+                  "El PDF conserva el contenido del borrador en una columna, con texto seleccionable y numeración de páginas."}
+              </p>
             </div>
             <p className="cv-disclaimer">
               Los ATS varían por empresa. No se verifica el diseño original,

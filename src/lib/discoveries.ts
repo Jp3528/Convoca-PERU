@@ -26,7 +26,13 @@ export function publicDiscoveries(
           !!source &&
           url.protocol === "https:" &&
           url.origin === new URL(source.url).origin &&
-          url.pathname.startsWith(new URL(source.url).pathname) &&
+          url.pathname.startsWith(
+            "detailPath" in source
+              ? source.detailPath
+              : new URL(source.url).pathname,
+          ) &&
+          !url.search &&
+          !url.hash &&
           !url.username &&
           !url.password;
       } catch {}

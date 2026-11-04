@@ -9,7 +9,7 @@ import type { ImportCandidate } from "./import-types";
 import { robotsAllows } from "./import-parser";
 import { PROFILE_EXTRACTOR_VERSION } from "./job-public";
 
-async function publicBytes(url: string, kind: "html" | "pdf") {
+export async function publicBytes(url: string, kind: "html" | "pdf") {
   const response = await fetch(url, {
     redirect: "error",
     cache: "no-store",
@@ -50,6 +50,37 @@ async function publicBytes(url: string, kind: "html" | "pdf") {
   return data;
 }
 
+export async function officialProfileText(data: Uint8Array) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const parse = async () => {
+    const pdf = await getDocumentProxy(new Uint8Array(data), {
+      maxImageSize: 1_000_000,
+      useSystemFonts: false,
+    });
+    try {
+      if (pdf.numPages > 12)
+        throw new Error("El perfil supera el límite de páginas.");
+      const { text } = await extractText(pdf, { mergePages: true });
+      if (text.length > 80000)
+        throw new Error("El perfil supera el límite de texto.");
+      return text;
+    } finally {
+      await pdf.loadingTask.destroy();
+    }
+  };
+  return Promise.race([
+    parse(),
+    new Promise<never>((_, reject) => {
+      timer = setTimeout(
+        () => reject(new Error("Tiempo de lectura agotado.")),
+        4000,
+      );
+    }),
+  ]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
+}
+
 export async function enrichOfficialCandidate(
   candidate: ImportCandidate,
   robots: string,
@@ -83,32 +114,14 @@ export async function enrichOfficialCandidate(
   };
   if (profile) {
     const safeUrl = safeOfficialDocument(profile.url);
-    if (!safeUrl || !robotsAllows(robots, new URL(safeUrl).pathname))
+    if (
+      !safeUrl ||
+      new URL(safeUrl).origin !== page.origin ||
+      !robotsAllows(robots, new URL(safeUrl).pathname)
+    )
       throw new Error("Documento no autorizado.");
     const data = await publicBytes(safeUrl, "pdf");
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const parse = async () => {
-      const pdf = await getDocumentProxy(new Uint8Array(data), {
-        maxImageSize: 1_000_000,
-        useSystemFonts: false,
-      });
-      if (pdf.numPages > 12)
-        throw new Error("El perfil supera el límite de páginas.");
-      return extractText(pdf, { mergePages: true });
-    };
-    const { text } = await Promise.race([
-      parse(),
-      new Promise<never>((_, reject) => {
-        timer = setTimeout(
-          () => reject(new Error("Tiempo de lectura agotado.")),
-          4000,
-        );
-      }),
-    ]).finally(() => {
-      if (timer) clearTimeout(timer);
-    });
-    if (text.length > 80000)
-      throw new Error("El perfil supera el límite de texto.");
+    const text = await officialProfileText(data);
     Object.assign(details, parseOfficialProfile(text));
   }
   return { ...candidate, details };

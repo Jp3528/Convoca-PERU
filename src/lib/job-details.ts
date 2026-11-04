@@ -40,6 +40,7 @@ export function parseOfficialDetailPage(html: string) {
     const url = safeOfficialDocument($(el).attr("href") || "");
     if (
       url &&
+      new URL(url).origin === "https://www.investinperu.pe" &&
       label &&
       /bases|perfil|cronograma|ficha.*postula/i.test(label) &&
       !seen.has(url)
@@ -126,7 +127,7 @@ export function parseOfficialProfile(text: string): Partial<JobDetails> {
   ].filter((s): s is string => !!s);
   // PDFs may separate thousands with spaces (13 364.19). Never stop at '13'.
   const salary = flat.match(
-    /Remuneraci[oó]n(?:\s+mensual)?\s*:?\s*(S\s*\/\.?\s*\d+(?:[.,]\d+|\s\d{3}(?!\d))*)/i,
+    /Remuneraci[oó]n(?:\s+mensual)?\s*:?\s*(?:S\s*\/\.?\s*)?(S\s*\/\.?\s*\d+(?:[.,]\d+|\s\d{3}(?!\d))*)/i,
   )?.[1];
   const count = flat.match(
     /N[úu]mero de (?:puestos vacantes|vacantes|plazas)\s*:?\s*(\d{1,4})/i,

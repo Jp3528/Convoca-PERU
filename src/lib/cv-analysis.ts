@@ -127,7 +127,7 @@ export function organizeCv(text: string) {
     blocks: { title: string; lines: string[]; index: number }[] = [];
   for (const line of lines) {
     const label = plain(line.trim());
-    if (line.trim().length < 55 && heading.test(label))
+    if (isCvSectionHeading(line))
       blocks.push({ title: label, lines: [line], index: blocks.length });
     else if (blocks.length) blocks[blocks.length - 1].lines.push(line);
     else preamble.push(line);
@@ -142,4 +142,8 @@ export function organizeCv(text: string) {
           : 3;
   blocks.sort((a, b) => rank(a.title) - rank(b.title) || a.index - b.index);
   return [...preamble, ...blocks.flatMap((b) => b.lines)].join("\n").trim();
+}
+
+export function isCvSectionHeading(line: string) {
+  return line.trim().length < 55 && heading.test(plain(line.trim()));
 }
