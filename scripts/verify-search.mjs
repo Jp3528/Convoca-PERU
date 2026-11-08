@@ -23,9 +23,64 @@ load.extensions[".ts"] = (module, filename) => {
     filename,
   );
 };
-const { daysUntil, opportunities } = load("../src/lib/data.ts");
+const { daysUntil, formatDate, opportunities } = load("../src/lib/data.ts");
 const { filterOpportunities, normalize } = load("../src/lib/search.ts");
+const { readApplications, savedApplications } = load(
+  "../src/lib/saved-applications.ts",
+);
 const now = new Date("2026-10-28T18:00:00Z");
+const summary = {
+  key: "sent-archived",
+  title: "Puesto archivado",
+  organization: "Entidad de prueba",
+  endsAt: "2026-10-20",
+};
+const saved = readApplications(
+  JSON.stringify([
+    { ...summary, href: "javascript:alert(1)", privateNote: "ignored" },
+    { ...summary, key: "invalid-date", endsAt: "2026-02-30" },
+    { ...summary, key: "__proto__" },
+  ]),
+);
+assert.deepEqual([...saved.values()], [summary]);
+assert.equal(readApplications("[invalid json").size, 0);
+const tracker = savedApplications(
+  ["later", "expired", "soon", "soon", "sent-archived", "missing"],
+  [
+    {
+      ...summary,
+      key: "later",
+      endsAt: "2026-11-20",
+      href: "/convocatorias/later",
+    },
+    {
+      ...summary,
+      key: "soon",
+      endsAt: "2026-10-28",
+      href: "/convocatorias/soon",
+    },
+    {
+      ...summary,
+      key: "expired",
+      endsAt: "2026-10-27",
+      href: "/convocatorias/expired",
+    },
+  ],
+  saved,
+  now,
+);
+assert.deepEqual(
+  tracker.rows.map((row) => row.summary.key),
+  ["soon", "later", "expired", "sent-archived"],
+);
+assert.deepEqual(tracker.unavailable, ["missing"]);
+assert.equal(tracker.rows.at(-1).sent, true);
+assert.equal(tracker.rows.at(-1).current, undefined);
+const previousTimeZone = process.env.TZ;
+process.env.TZ = "Pacific/Auckland";
+assert.equal(formatDate("2026-11-16"), "16 de noviembre de 2026");
+if (previousTimeZone === undefined) delete process.env.TZ;
+else process.env.TZ = previousTimeZone;
 assert.equal(
   daysUntil("2026-10-28", now),
   0,

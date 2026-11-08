@@ -2207,6 +2207,187 @@ button:disabled {
     flex: 1 1 100%;
   }
 }
+.saved-tracker-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-block: 0 1rem;
+}
+.saved-tracker-toolbar h2 {
+  color: var(--ink);
+  font-size: var(--type-card);
+}
+.saved-tracker-toolbar p,
+.saved-tracker-notice,
+.saved-tracker-entity {
+  font-size: var(--type-label);
+  line-height: 1.5;
+}
+.saved-tracker-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+.saved-tracker-filters button {
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--control-border);
+  border-radius: 0.5rem;
+  background: white;
+  color: var(--ink);
+  font-size: var(--type-label);
+  font-weight: 650;
+  cursor: pointer;
+}
+.saved-tracker-filters button:hover {
+  background: var(--mint);
+}
+.saved-tracker-filters button[aria-pressed="true"] {
+  background: var(--brand);
+  color: white;
+  border-color: var(--brand);
+}
+.saved-tracker-filters span {
+  margin-inline-start: 0.25rem;
+  font-variant-numeric: tabular-nums;
+}
+.saved-tracker-notice:not(:empty) {
+  padding-block-end: 0.75rem;
+  color: var(--muted);
+}
+.saved-tracker-list,
+.saved-tracker-empty {
+  border: 1px solid var(--line);
+  border-radius: 0.875rem;
+  background: white;
+}
+.saved-tracker-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.saved-tracker-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, 0.45fr) minmax(11.75rem, 0.45fr);
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.375rem 1.5rem;
+}
+.saved-tracker-row + .saved-tracker-row {
+  border-top: 1px solid var(--line);
+}
+.saved-tracker-job h3 {
+  font-size: var(--type-card);
+  line-height: 1.25;
+  color: var(--ink);
+  margin-block: 0.25rem 0.75rem;
+  overflow-wrap: anywhere;
+}
+.saved-tracker-job h3 a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.saved-tracker-entity,
+.saved-tracker-deadline > span:not(.deadline-badge) {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.saved-tracker-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: var(--mint);
+  color: var(--ink);
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: var(--type-note);
+  font-weight: 650;
+}
+.saved-tracker-status.is-sent {
+  background: #e8f4ed;
+  color: #185b40;
+}
+.saved-tracker-deadline {
+  display: grid;
+  justify-items: start;
+  gap: 0.25rem;
+  font-size: var(--type-note);
+}
+.saved-tracker-deadline time {
+  color: var(--ink);
+  font-size: var(--type-label);
+  font-weight: 650;
+}
+.saved-tracker-deadline .deadline-badge {
+  margin-block-start: 0.375rem;
+}
+.saved-tracker-actions {
+  display: grid;
+  gap: 0.25rem;
+}
+.saved-tracker-actions button,
+.saved-unavailable button {
+  min-height: 44px;
+}
+.saved-tracker-empty {
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+.saved-tracker-empty h3 {
+  color: var(--ink);
+  font-size: var(--type-card);
+}
+.saved-tracker-empty p {
+  margin-block: 0.5rem;
+  color: var(--muted);
+}
+.saved-tracker-empty .button-primary {
+  margin-top: 0.75rem;
+}
+@media (max-width: 50rem) {
+  .saved-tracker-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.65fr);
+  }
+  .saved-tracker-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.625rem 1rem;
+  }
+}
+@media (max-width: 36rem) {
+  .saved-tracker-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.875rem;
+    padding: 1rem;
+  }
+  .saved-tracker-actions .button-secondary {
+    width: 100%;
+  }
+}
+@media (max-width: 360px) {
+  .header-inner,
+  .header-actions {
+    gap: 0.375rem;
+  }
+  .header-inner .brand {
+    gap: 0.5rem;
+    font-size: 25px;
+  }
+  .header-actions .saved-link {
+    position: relative;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .header-actions .nav-count {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .button-primary,
   .button-secondary,

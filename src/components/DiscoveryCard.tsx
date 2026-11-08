@@ -61,9 +61,18 @@ export function DiscoveryCard({ discovery: c }: { discovery: Discovery }) {
       <div className="job-card-window">
         <Icon name="clock" size={16} />
         <span>
-          <strong>Postulaciones</strong>
+          <strong>
+            {c.startsAt === c.endsAt
+              ? "Único día de postulación"
+              : "Postulaciones"}
+          </strong>
           <br />
-          <time dateTime={c.startsAt}>{formatDate(c.startsAt)}</time> al{" "}
+          {c.startsAt && c.startsAt !== c.endsAt && (
+            <>
+              <time dateTime={c.startsAt}>{formatDate(c.startsAt)}</time>{" "}
+              al{" "}
+            </>
+          )}
           <time dateTime={c.endsAt}>{formatDate(c.endsAt)}</time>
         </span>
       </div>

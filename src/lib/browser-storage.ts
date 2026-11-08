@@ -33,7 +33,11 @@ export function useBrowserStorage(key: string) {
     window.dispatchEvent(new Event("convoca-local"));
     return persistent;
   }
-  return { raw, write };
+  return {
+    raw,
+    write,
+    update: (change: (value: string) => string) => write(change(snapshot())),
+  };
 }
 export function downloadText(
   filename: string,

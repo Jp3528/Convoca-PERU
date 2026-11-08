@@ -579,6 +579,7 @@ export function getArticleBySlug(slug: string) {
 
 export function formatDate(value: string) {
   return new Intl.DateTimeFormat("es-PE", {
+    timeZone: "America/Lima",
     day: "2-digit",
     month: "long",
     year: "numeric",
