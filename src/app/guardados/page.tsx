@@ -12,23 +12,41 @@ export default async function SavedPage() {
   ]);
   const catalog: SavedJob[] = [
     ...opportunities.map(
-      ({ slug, title, organization, endsAt, startsAt, isSample }) => ({
+      ({
+        slug,
+        title,
+        organization,
+        endsAt,
+        startsAt,
+        isSample,
+        sourceUrl,
+      }) => ({
         key: slug,
         title,
         organization,
         endsAt,
         startsAt,
+        sourceUrl,
         sample: isSample,
         href: `/convocatorias/${slug}`,
       }),
     ),
     ...discoveries.map(
-      ({ id, title, organization, endsAt, startsAt, availability }) => ({
+      ({
+        id,
+        title,
+        organization,
+        endsAt,
+        startsAt,
+        availability,
+        sourceUrl,
+      }) => ({
         key: discoveryKey({ id }),
         title,
         organization,
         endsAt,
         startsAt,
+        sourceUrl,
         availability,
         href: `/descubiertas/${id}`,
       }),

@@ -3,10 +3,12 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { formatDate } from "@/lib/data";
-import { useBrowserStorage } from "@/lib/browser-storage";
+import { downloadText, useBrowserStorage } from "@/lib/browser-storage";
+import { applicationCalendar } from "@/lib/deadline-calendar";
 import {
   readApplications,
   savedApplications,
+  pendingCalendarJobs,
   type SavedJob,
   type SavedSummary,
 } from "@/lib/saved-applications";
@@ -30,6 +32,7 @@ export function SavedTracker({ catalog }: { catalog: SavedJob[] }) {
   const heading = useRef<HTMLHeadingElement>(null);
   const activeFilter = useRef<HTMLButtonElement>(null);
   const { rows, unavailable } = savedApplications(saved, catalog, sent);
+  const calendarCount = pendingCalendarJobs(rows).length;
   const sentCount = rows.filter((row) => row.sent).length;
   const count = {
     all: rows.length,
@@ -39,6 +42,27 @@ export function SavedTracker({ catalog }: { catalog: SavedJob[] }) {
   const visible = rows.filter(
     (row) => filter === "all" || row.sent === (filter === "sent"),
   );
+
+  function downloadCalendar() {
+    const now = new Date();
+    const jobs = pendingCalendarJobs(rows, now);
+    if (jobs.length === 0) {
+      setNotice("Ya no tienes convocatorias pendientes con un plazo vigente.");
+      return;
+    }
+    try {
+      downloadText(
+        "convoca-agenda.ics",
+        applicationCalendar(jobs, now),
+        "text/calendar",
+      );
+      setNotice("Archivo .ics preparado. Impórtalo en tu calendario.");
+    } catch {
+      setNotice(
+        "No se pudo preparar la agenda. Consulta las fechas en las fichas oficiales.",
+      );
+    }
+  }
 
   function changeStatus(summary: SavedSummary, submitted: boolean) {
     const persistent = update((value) => {
@@ -111,6 +135,27 @@ export function SavedTracker({ catalog }: { catalog: SavedJob[] }) {
           </div>
         )}
       </div>
+      {rows.length > 0 && (
+        <div className="saved-calendar">
+          <div>
+            <h3>Agenda de postulaciones</h3>
+            <p id="saved-calendar-help">
+              {calendarCount > 0
+                ? `${calendarCount} ${calendarCount === 1 ? "pendiente con plazo vigente" : "pendientes con plazo vigente"}. Descarga sus próximas aperturas y cierres.`
+                : "Tus pendientes con plazo vigente aparecerán aquí."}
+            </p>
+          </div>
+          <button
+            className="button-secondary"
+            type="button"
+            aria-describedby="saved-calendar-help"
+            onClick={downloadCalendar}
+            disabled={calendarCount === 0}
+          >
+            <Icon name="calendar" size={18} /> Descargar calendario
+          </button>
+        </div>
+      )}
       <p className="saved-tracker-notice" role="status">
         {notice}
       </p>

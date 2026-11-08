@@ -25,7 +25,7 @@ load.extensions[".ts"] = (module, filename) => {
 };
 const { daysUntil, formatDate, opportunities } = load("../src/lib/data.ts");
 const { filterOpportunities, normalize } = load("../src/lib/search.ts");
-const { readApplications, savedApplications } = load(
+const { readApplications, savedApplications, pendingCalendarJobs } = load(
   "../src/lib/saved-applications.ts",
 );
 const now = new Date("2026-10-28T18:00:00Z");
@@ -76,6 +76,42 @@ assert.deepEqual(
 assert.deepEqual(tracker.unavailable, ["missing"]);
 assert.equal(tracker.rows.at(-1).sent, true);
 assert.equal(tracker.rows.at(-1).current, undefined);
+const dateCase = {
+  ...summary,
+  sourceUrl: "https://example.com/convocatoria",
+  href: "/convocatorias/prueba",
+  endsAt: "2026-10-29",
+};
+const calendarCatalog = [
+  { ...dateCase, key: "current", startsAt: "2026-10-27" },
+  {
+    ...dateCase,
+    key: "upcoming",
+    startsAt: "2026-10-29",
+    availability: "upcoming",
+  },
+  { ...dateCase, key: "sample", sample: true },
+  { ...dateCase, key: "expired", endsAt: "2026-10-27" },
+  { ...dateCase, key: "uncertain", availability: "stale" },
+  { ...dateCase, key: "submitted" },
+];
+const calendarRows = savedApplications(
+  calendarCatalog.map((job) => job.key),
+  calendarCatalog,
+  new Map([["submitted", dateCase]]),
+  now,
+).rows;
+assert.deepEqual(
+  pendingCalendarJobs(calendarRows, now).map((job) => [job.key, job.startsAt]),
+  [
+    ["current", undefined],
+    ["upcoming", "2026-10-29"],
+  ],
+);
+assert.deepEqual(
+  pendingCalendarJobs(calendarRows, new Date("2026-10-30T05:00:00Z")),
+  [],
+);
 const previousTimeZone = process.env.TZ;
 process.env.TZ = "Pacific/Auckland";
 assert.equal(formatDate("2026-11-16"), "16 de noviembre de 2026");

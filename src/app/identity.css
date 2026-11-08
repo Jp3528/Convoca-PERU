@@ -2257,6 +2257,30 @@ button:disabled {
   padding-block-end: 0.75rem;
   color: var(--muted);
 }
+.saved-calendar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  background: var(--paper);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin-block-end: 1rem;
+}
+.saved-calendar h3 {
+  color: var(--ink);
+  font-size: 1rem;
+}
+.saved-calendar p {
+  color: var(--muted);
+  font-size: var(--type-label);
+  line-height: 1.5;
+  margin-top: 0.25rem;
+}
+.saved-calendar button {
+  min-height: 44px;
+}
 .saved-tracker-list,
 .saved-tracker-empty {
   border: 1px solid var(--line);
@@ -2270,7 +2294,10 @@ button:disabled {
 }
 .saved-tracker-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(10rem, 0.45fr) minmax(11.75rem, 0.45fr);
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, 0.45fr) minmax(
+      11.75rem,
+      0.45fr
+    );
   align-items: center;
   gap: 1.25rem;
   padding: 1.375rem 1.5rem;
@@ -2359,6 +2386,9 @@ button:disabled {
   }
 }
 @media (max-width: 36rem) {
+  .saved-calendar button {
+    width: 100%;
+  }
   .saved-tracker-row {
     grid-template-columns: minmax(0, 1fr);
     gap: 0.875rem;

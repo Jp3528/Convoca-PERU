@@ -1,5 +1,6 @@
 import { daysUntil } from "./data";
 import type { Discovery } from "./import-types";
+import { isCalendarDate, type ApplicationSchedule } from "./deadline-calendar";
 
 export type SavedSummary = {
   key: string;
@@ -10,6 +11,7 @@ export type SavedSummary = {
 
 export type SavedJob = SavedSummary & {
   href: string;
+  sourceUrl: string;
   startsAt?: string;
   availability?: Discovery["availability"];
   sample?: boolean;
@@ -31,9 +33,7 @@ export function readApplications(raw: string) {
         typeof organization !== "string" ||
         !organization.trim() ||
         typeof endsAt !== "string" ||
-        !/^\d{4}-\d{2}-\d{2}$/.test(endsAt) ||
-        !Number.isFinite(Date.parse(endsAt)) ||
-        new Date(endsAt).toISOString().slice(0, 10) !== endsAt
+        !isCalendarDate(endsAt)
       )
         continue;
       applications.set(key, {
@@ -75,4 +75,40 @@ export function savedApplications(
         : b.summary.endsAt.localeCompare(a.summary.endsAt)),
   );
   return { rows, unavailable };
+}
+
+export function pendingCalendarJobs(
+  rows: ReturnType<typeof savedApplications>["rows"],
+  now = new Date(),
+): ApplicationSchedule[] {
+  return rows.flatMap(({ current, sent }) => {
+    if (
+      sent ||
+      !current ||
+      current.sample ||
+      (current.availability &&
+        current.availability !== "open" &&
+        current.availability !== "upcoming") ||
+      !isCalendarDate(current.endsAt) ||
+      daysUntil(current.endsAt, now) < 0
+    )
+      return [];
+    const { key, title, organization, endsAt, startsAt, sourceUrl } = current;
+    return [
+      {
+        key,
+        title,
+        organization,
+        endsAt,
+        sourceUrl,
+        startsAt:
+          startsAt &&
+          isCalendarDate(startsAt) &&
+          startsAt <= endsAt &&
+          daysUntil(startsAt, now) >= 0
+            ? startsAt
+            : undefined,
+      },
+    ];
+  });
 }

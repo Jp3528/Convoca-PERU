@@ -22,7 +22,9 @@ const { parseOfficialDetailPage, parseOfficialProfile, safeOfficialDocument } =
 const { publicJobDetails } = load("../src/lib/job-public.ts");
 const { filterDiscoveries } = load("../src/lib/discoveries.ts");
 const { profileGuide } = load("../src/lib/cv-profile-guide.ts");
-const { deadlineCalendar } = load("../src/lib/deadline-calendar.ts");
+const { deadlineCalendar, applicationCalendar } = load(
+  "../src/lib/deadline-calendar.ts",
+);
 const calendarEvent = {
   key: "puesto-real",
   title: "Analista de inversión, gestión; proyectos\\públicos",
@@ -69,6 +71,20 @@ assert.ok(
 );
 for (const line of injectedCalendar.split("\r\n"))
   assert.ok(Buffer.byteLength(line) <= 75);
+const grouped = applicationCalendar([
+  { ...calendarEvent, startsAt: "2026-12-29" },
+  { ...calendarEvent, key: "plazo-de-un-dia", startsAt: calendarEvent.endsAt },
+]).replace(/\r\n /g, "");
+assert.equal(grouped.match(/BEGIN:VCALENDAR/g).length, 1);
+assert.equal(grouped.match(/BEGIN:VEVENT/g).length, 3);
+assert.ok(grouped.includes("UID:puesto-real-apertura@convoca-peru.vercel.app"));
+assert.ok(grouped.includes("UID:puesto-real-cierre@convoca-peru.vercel.app"));
+assert.ok(grouped.includes("DTSTART;VALUE=DATE:20261229"));
+assert.ok(grouped.includes("SUMMARY:Único día de postulación"));
+assert.equal(grouped.includes("plazo-de-un-dia-apertura"), false);
+assert.throws(() =>
+  applicationCalendar([{ ...calendarEvent, startsAt: "2027-01-01" }]),
+);
 const { reserveCvPreparation, remainingCvPreparations } = load(
   "../src/lib/cv-preparation-limit.ts",
 );

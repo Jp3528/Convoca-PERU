@@ -2,21 +2,18 @@
 
 import { useState } from "react";
 import { deadlineCalendar, type DeadlineEvent } from "@/lib/deadline-calendar";
+import { downloadText } from "@/lib/browser-storage";
 import { Icon } from "./Icon";
 
 export function DeadlineCalendarButton({ event }: { event: DeadlineEvent }) {
   const [message, setMessage] = useState("");
   function download() {
     try {
-      const file = new Blob([deadlineCalendar(event)], {
-        type: "text/calendar;charset=utf-8",
-      });
-      const url = URL.createObjectURL(file);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `cierre-${event.key}.ics`;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      downloadText(
+        `cierre-${event.key}.ics`,
+        deadlineCalendar(event),
+        "text/calendar",
+      );
       setMessage(
         "Archivo .ics preparado. Ábrelo o impórtalo en tu calendario.",
       );
